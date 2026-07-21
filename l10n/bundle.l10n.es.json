@@ -1,0 +1,13 @@
+{
+  "Input file name": "Introducir nombre de archivo",
+  "Input folder name": "Introducir nombre de carpeta",
+  "No active file": "No hay archivo activo",
+  "Please select a file first to compare": "Seleccione un archivo primero para comparar",
+  "Input duplicate name": "Introducir nombre de duplicado",
+  "Input new name": "Introducir nuevo nombre",
+  "Input new label": "Introducir nueva etiqueta",
+  "No workspace": "No hay carpeta abierta",
+  "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?": "La ubicación de destino ya contiene un archivo llamado \"{0}\".\n\n¿Quiere reemplazarlo?",
+  "Replace": "Reemplazar",
+  "Cut (ready to paste)": "Cortar (listo para pegar)"
+}

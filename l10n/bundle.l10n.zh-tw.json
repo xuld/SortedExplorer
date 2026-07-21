@@ -1,0 +1,13 @@
+{
+  "Input file name": "輸入檔案名",
+  "Input folder name": "輸入資料夾名稱",
+  "No active file": "沒有活動檔案",
+  "Please select a file first to compare": "請先選擇一個檔案進行比較",
+  "Input duplicate name": "輸入副本名稱",
+  "Input new name": "輸入新名稱",
+  "Input new label": "輸入新標籤",
+  "No workspace": "無開啟的資料夾",
+  "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?": "目標位置已包含名為 \"{0}\" 的檔案。\n\n是否取代它？",
+  "Replace": "取代",
+  "Cut (ready to paste)": "剪下（準備貼上）"
+}

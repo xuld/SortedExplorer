@@ -1,0 +1,470 @@
+{
+  "name": "sorted-explorer",
+  "displayName": "%extension.displayName%",
+  "description": "%extension.description%",
+  "version": "1.0.0",
+  "publisher": "xuld",
+  "license": "MIT",
+  "icon": "image/icon.png",
+  "engines": {
+    "vscode": "^1.125.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "keywords": [
+    "sort",
+    "explorer",
+    "files",
+    "folder",
+    "file management",
+    "organize",
+    "drag drop",
+    "custom sort"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/xuld/SortedExplorer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/xuld/SortedExplorer/issues"
+  },
+  "homepage": "https://github.com/xuld/SortedExplorer#readme",
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "build": "tsc -p tsconfig.json",
+    "watch": "tsc -watch -p tsconfig.json",
+    "l10n": "npx @vscode/l10n-dev export src"
+  },
+  "devDependencies": {
+    "@types/node": "^26.1.1",
+    "@types/vscode": "^1.125.0",
+    "typescript": "^7.0.2"
+  },
+  "main": "./dist/extension.js",
+  "l10n": "./l10n",
+  "activationEvents": [],
+  "contributes": {
+    "configuration": {
+      "title": "%extension.displayName%",
+      "properties": {
+        "sortedExplorer.orders": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "%config.orders%"
+        },
+        "sortedExplorer.labels": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": {
+            "type": "string"
+          },
+          "description": "%config.labels%"
+        },
+        "sortedExplorer.ignore": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [
+            ".DS_Store",
+            ".git",
+            ".idea",
+            ".vs"
+          ],
+          "description": "%config.ignore%"
+        },
+        "sortedExplorer.foldersFirst": {
+          "type": "boolean",
+          "default": true,
+          "description": "%config.foldersFirst%"
+        },
+        "sortedExplorer.showNumbers": {
+          "type": "boolean",
+          "default": false,
+          "description": "%config.showNumbers%"
+        },
+        "sortedExplorer.showListedOnly": {
+          "type": "boolean",
+          "default": false,
+          "description": "%config.showListedOnly%"
+        }
+      }
+    },
+    "views": {
+      "explorer": [
+        {
+          "id": "sortedExplorer",
+          "name": "%views.explorerSort.name%",
+          "icon": "$(folder-opened)"
+        }
+      ]
+    },
+    "viewsWelcome": [
+      {
+        "view": "sortedExplorer",
+        "contents": "%views.explorerSort.content%"
+      }
+    ],
+    "commands": [
+      {
+        "command": "sortedExplorer.openFolder",
+        "title": "%commands.openFolder%",
+        "icon": "$(folder-opened)"
+      },
+      {
+        "command": "sortedExplorer.newFile",
+        "title": "%commands.newFile%",
+        "icon": "$(new-file)"
+      },
+      {
+        "command": "sortedExplorer.newFolder",
+        "title": "%commands.newFolder%",
+        "icon": "$(new-folder)"
+      },
+      {
+        "command": "sortedExplorer.refresh",
+        "title": "%commands.refresh%",
+        "icon": "$(refresh)"
+      },
+      {
+        "command": "sortedExplorer.collapseAll",
+        "title": "%commands.collapseAll%",
+        "icon": "$(collapse-all)"
+      },
+      {
+        "command": "sortedExplorer.revealInExplorer",
+        "title": "%commands.revealInExplorer%"
+      },
+      {
+        "command": "sortedExplorer.revealInFinder",
+        "title": "%commands.revealInFinder%"
+      },
+      {
+        "command": "sortedExplorer.revealInWindowsExplorer",
+        "title": "%commands.revealInWindowsExplorer%"
+      },
+      {
+        "command": "sortedExplorer.revealInSortedExplorer",
+        "title": "%commands.revealInSortedExplorer%",
+        "icon": "$(location)"
+      },
+      {
+        "command": "sortedExplorer.openInTerminal",
+        "title": "%commands.openInTerminal%"
+      },
+      {
+        "command": "sortedExplorer.openFile",
+        "title": "%commands.openFile%"
+      },
+      {
+        "command": "sortedExplorer.openToSide",
+        "title": "%commands.openToSide%"
+      },
+      {
+        "command": "sortedExplorer.openWith",
+        "title": "%commands.openWith%"
+      },
+      {
+        "command": "sortedExplorer.selectForCompare",
+        "title": "%commands.selectForCompare%"
+      },
+      {
+        "command": "sortedExplorer.compareWithSelected",
+        "title": "%commands.compareWithSelected%"
+      },
+      {
+        "command": "sortedExplorer.openTimeline",
+        "title": "%commands.openTimeline%"
+      },
+      {
+        "command": "sortedExplorer.findInFolder",
+        "title": "%commands.findInFolder%"
+      },
+      {
+        "command": "sortedExplorer.cut",
+        "title": "%commands.cut%"
+      },
+      {
+        "command": "sortedExplorer.copy",
+        "title": "%commands.copy%"
+      },
+      {
+        "command": "sortedExplorer.paste",
+        "title": "%commands.paste%"
+      },
+      {
+        "command": "sortedExplorer.duplicate",
+        "title": "%commands.duplicate%"
+      },
+      {
+        "command": "sortedExplorer.copyPath",
+        "title": "%commands.copyPath%"
+      },
+      {
+        "command": "sortedExplorer.copyRelativePath",
+        "title": "%commands.copyRelativePath%"
+      },
+      {
+        "command": "sortedExplorer.rename",
+        "title": "%commands.rename%"
+      },
+      {
+        "command": "sortedExplorer.delete",
+        "title": "%commands.delete%"
+      },
+      {
+        "command": "sortedExplorer.setLabel",
+        "title": "%commands.setLabel%"
+      },
+      {
+        "command": "sortedExplorer.moveUp",
+        "title": "%commands.moveUp%",
+        "icon": "$(arrow-up)"
+      },
+      {
+        "command": "sortedExplorer.moveDown",
+        "title": "%commands.moveDown%",
+        "icon": "$(arrow-down)"
+      }
+    ],
+    "menus": {
+      "view/title": [
+        {
+          "command": "sortedExplorer.newFile",
+          "when": "view == sortedExplorer",
+          "group": "navigation@1"
+        },
+        {
+          "command": "sortedExplorer.newFolder",
+          "when": "view == sortedExplorer",
+          "group": "navigation@2"
+        },
+        {
+          "command": "sortedExplorer.refresh",
+          "when": "view == sortedExplorer",
+          "group": "navigation@3"
+        },
+        {
+          "command": "sortedExplorer.collapseAll",
+          "when": "view == sortedExplorer",
+          "group": "navigation@4"
+        }
+      ],
+      "view/item/context": [
+        {
+          "command": "sortedExplorer.newFile",
+          "when": "view == sortedExplorer && viewItem != file",
+          "group": "0_open@1"
+        },
+        {
+          "command": "sortedExplorer.newFolder",
+          "when": "view == sortedExplorer && viewItem != file",
+          "group": "0_open@2"
+        },
+        {
+          "command": "sortedExplorer.revealInFinder",
+          "when": "view == sortedExplorer && isMac",
+          "group": "0_open@3"
+        },
+        {
+          "command": "sortedExplorer.revealInWindowsExplorer",
+          "when": "view == sortedExplorer && isWindows",
+          "group": "0_open@4"
+        },
+        {
+          "command": "sortedExplorer.revealInExplorer",
+          "when": "view == sortedExplorer",
+          "group": "0_open@5"
+        },
+        {
+          "command": "sortedExplorer.openInTerminal",
+          "when": "view == sortedExplorer && viewItem == folder",
+          "group": "0_open@6"
+        },
+        {
+          "command": "sortedExplorer.openToSide",
+          "when": "view == sortedExplorer && viewItem == file",
+          "group": "0_open@7"
+        },
+        {
+          "command": "sortedExplorer.openWith",
+          "when": "view == sortedExplorer && viewItem == file",
+          "group": "0_open@8"
+        },
+        {
+          "command": "sortedExplorer.findInFolder",
+          "when": "view == sortedExplorer && viewItem == folder",
+          "group": "1_find@9"
+        },
+        {
+          "command": "sortedExplorer.compareWithSelected",
+          "when": "view == sortedExplorer && viewItem == file && sortedExplorer.compare",
+          "group": "1_compare@1"
+        },
+        {
+          "command": "sortedExplorer.selectForCompare",
+          "when": "view == sortedExplorer && viewItem == file",
+          "group": "1_compare@2"
+        },
+        {
+          "command": "sortedExplorer.openTimeline",
+          "when": "view == sortedExplorer && viewItem == file",
+          "group": "2_timeline@3"
+        },
+        {
+          "command": "sortedExplorer.cut",
+          "when": "view == sortedExplorer",
+          "group": "3_clipboard@1"
+        },
+        {
+          "command": "sortedExplorer.copy",
+          "when": "view == sortedExplorer",
+          "group": "3_clipboard@2"
+        },
+        {
+          "command": "sortedExplorer.paste",
+          "when": "view == sortedExplorer && sortedExplorer.clipboard",
+          "group": "3_clipboard@3"
+        },
+        {
+          "command": "sortedExplorer.duplicate",
+          "when": "view == sortedExplorer",
+          "group": "3_clipboard@4"
+        },
+        {
+          "command": "sortedExplorer.copyPath",
+          "when": "view == sortedExplorer",
+          "group": "4_path@1"
+        },
+        {
+          "command": "sortedExplorer.copyRelativePath",
+          "when": "view == sortedExplorer",
+          "group": "4_path@2"
+        },
+        {
+          "command": "sortedExplorer.rename",
+          "when": "view == sortedExplorer",
+          "group": "5_edit@1"
+        },
+        {
+          "command": "sortedExplorer.delete",
+          "when": "view == sortedExplorer",
+          "group": "5_edit@3"
+        },
+        {
+          "command": "sortedExplorer.setLabel",
+          "when": "view == sortedExplorer",
+          "group": "6_priority@1"
+        },
+        {
+          "command": "sortedExplorer.moveUp",
+          "when": "view == sortedExplorer",
+          "group": "6_priority@2"
+        },
+        {
+          "command": "sortedExplorer.moveDown",
+          "when": "view == sortedExplorer",
+          "group": "6_priority@3"
+        }
+      ],
+      "editor/title/context": [
+        {
+          "command": "sortedExplorer.revealInSortedExplorer",
+          "group": "2_workspace@10"
+        }
+      ],
+      "explorer/context": [
+        {
+          "command": "sortedExplorer.revealInSortedExplorer",
+          "group": "navigation@100"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "sortedExplorer.cut",
+        "key": "cmd+x",
+        "mac": "cmd+x",
+        "win": "ctrl+x",
+        "when": "focusedView == sortedExplorer"
+      },
+      {
+        "command": "sortedExplorer.copy",
+        "key": "cmd+c",
+        "mac": "cmd+c",
+        "win": "ctrl+c",
+        "when": "focusedView == sortedExplorer"
+      },
+      {
+        "command": "sortedExplorer.paste",
+        "key": "cmd+v",
+        "mac": "cmd+v",
+        "win": "ctrl+v",
+        "when": "focusedView == sortedExplorer"
+      },
+      {
+        "command": "sortedExplorer.delete",
+        "key": "cmd+backspace",
+        "mac": "cmd+backspace",
+        "win": "delete",
+        "when": "focusedView == sortedExplorer"
+      },
+      {
+        "command": "sortedExplorer.rename",
+        "key": "enter",
+        "when": "focusedView == sortedExplorer"
+      },
+      {
+        "command": "sortedExplorer.copyPath",
+        "key": "alt+cmd+c",
+        "mac": "alt+cmd+c",
+        "win": "ctrl+alt+c",
+        "when": "focusedView == sortedExplorer"
+      },
+      {
+        "command": "sortedExplorer.copyRelativePath",
+        "key": "shift+alt+cmd+c",
+        "mac": "shift+alt+cmd+c",
+        "win": "ctrl+shift+alt+c",
+        "when": "focusedView == sortedExplorer"
+      },
+      {
+        "command": "sortedExplorer.revealInFinder",
+        "key": "ctrl+g",
+        "mac": "cmd+g",
+        "when": "focusedView == sortedExplorer && isMac"
+      },
+      {
+        "command": "sortedExplorer.revealInWindowsExplorer",
+        "key": "ctrl+g",
+        "mac": "cmd+g",
+        "when": "focusedView == sortedExplorer && isWindows"
+      },
+      {
+        "command": "sortedExplorer.moveUp",
+        "key": "ctrl+up",
+        "mac": "cmd+shift+up",
+        "win": "ctrl+up",
+        "when": "focusedView == sortedExplorer"
+      },
+      {
+        "command": "sortedExplorer.moveDown",
+        "key": "ctrl+down",
+        "mac": "cmd+shift+down",
+        "win": "ctrl+down",
+        "when": "focusedView == sortedExplorer"
+      },
+      {
+        "command": "sortedExplorer.revealInSortedExplorer",
+        "key": "ctrl+cmd+e",
+        "mac": "ctrl+cmd+e",
+        "win": "ctrl+alt+e",
+        "when": "editorTextFocus"
+      }
+    ]
+  }
+}

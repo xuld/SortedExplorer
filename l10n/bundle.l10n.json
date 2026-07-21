@@ -1,0 +1,13 @@
+{
+  "Input file name": "Input file name",
+  "Input folder name": "Input folder name",
+  "No active file": "No active file",
+  "Please select a file first to compare": "Please select a file first to compare",
+  "Input duplicate name": "Input duplicate name",
+  "Input new name": "Input new name",
+  "Input new label": "Input new label",
+  "No workspace": "No Workspace",
+  "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?": "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?",
+  "Replace": "Replace",
+  "Cut (ready to paste)": "Cut (ready to paste)"
+}

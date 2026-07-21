@@ -1,0 +1,13 @@
+{
+  "Input file name": "ファイル名を入力",
+  "Input folder name": "フォルダ名を入力",
+  "No active file": "アクティブなファイルがありません",
+  "Please select a file first to compare": "比較するファイルを先に選択してください",
+  "Input duplicate name": "複製名を入力",
+  "Input new name": "新しい名前を入力",
+  "Input new label": "新しいラベルを入力",
+  "No workspace": "開いているフォルダがありません",
+  "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?": "宛先には既に「{0}」という名前のファイルが存在します。\n\n置き換えますか？",
+  "Replace": "置換",
+  "Cut (ready to paste)": "切り取り（貼り付け準備完了）"
+}

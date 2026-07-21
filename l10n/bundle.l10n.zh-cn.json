@@ -1,0 +1,13 @@
+{
+  "Input file name": "输入文件名",
+  "Input folder name": "输入文件夹名称",
+  "No active file": "没有活动文件",
+  "Please select a file first to compare": "请先选择一个文件进行比较",
+  "Input duplicate name": "输入副本名称",
+  "Input new name": "输入新名称",
+  "Input new label": "输入新标签",
+  "No workspace": "无打开的文件夹",
+  "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?": "目标位置已包含名为 \"{0}\" 的文件。\n\n是否替换它？",
+  "Replace": "替换",
+  "Cut (ready to paste)": "剪切（准备粘贴）"
+}
