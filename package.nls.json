@@ -1,6 +1,6 @@
 {
   "extension.displayName": "Sorted Explorer",
-  "extension.description": "Custom rule-based file/folder sorting",
+  "extension.description": "Allows you to sort files and folders and reorder them using drag & drop.",
   "views.explorerSort.name": "Sorted Explorer",
   "views.explorerSort.content": "No opened folders.\n[Open Folder](command:sortedExplorer.openFolder)",
   "commands.openFolder": "Open Folder",

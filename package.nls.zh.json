@@ -1,6 +1,6 @@
 {
   "extension.displayName": "资源管理器（排序）",
-  "extension.description": "基于自定义规则的文件/文件夹排序",
+  "extension.description": "可以拖动排序的文件管理器",
   "views.explorerSort.name": "资源管理器（排序）",
   "views.explorerSort.content": "尚未打开文件夹。\n[打开文件夹](command:sortedExplorer.openFolder)",
   "commands.openFolder": "打开文件夹",
