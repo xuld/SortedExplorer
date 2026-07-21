@@ -160,18 +160,18 @@ export function activate(context: vscode.ExtensionContext) {
 			await vscode.commands.executeCommand("setContext", "sortedExplorer.compare", undefined)
 		}),
 
-		vscode.commands.registerCommand("sortedExplorer.openTimeline", (item = treeView.selection[0]) => {
+		vscode.commands.registerCommand("sortedExplorer.openTimeline", async (item = treeView.selection[0]) => {
 			if (!item) {
 				return
 			}
-			vscode.commands.executeCommand("timeline.openTimeline", item.resourceUri)
+			await vscode.commands.executeCommand("files.openTimeline", item.resourceUri)
 		}),
 
-		vscode.commands.registerCommand("sortedExplorer.findInFolder", (item = treeView.selection[0]) => {
+		vscode.commands.registerCommand("sortedExplorer.findInFolder", async (item = treeView.selection[0]) => {
 			if (!item) {
 				return
 			}
-			vscode.commands.executeCommand("workbench.action.findInFiles", {
+			await vscode.commands.executeCommand("workbench.action.findInFiles", {
 				query: "",
 				triggerSearch: true,
 				filesToInclude: vscode.workspace.asRelativePath(item.resourceUri) || ".",
@@ -318,33 +318,35 @@ export function activate(context: vscode.ExtensionContext) {
 				await vscode.workspace.getConfiguration(configSection).update("labels", labels)
 			}
 		}),
-		vscode.commands.registerCommand("sortedExplorer.moveUp", async (item?: FileTreeItem) => {
-			for (const selction of getSelectedItems(item)) {
-				const parentDir = vscode.Uri.joinPath(selction.resourceUri, "..")
-				const items = await treeProvider.readDirectory(parentDir)
-				const index = items.findIndex(t => t.name === selction.name)
-				if (index <= 0) {
-					return
-				}
-				const temp = items[index]
-				items[index] = items[index - 1]
-				items[index - 1] = temp
-				await saveOrders(treeProvider, parentDir, items)
+		vscode.commands.registerCommand("sortedExplorer.moveUp", async (item = treeView.selection[0]) => {
+			if (!item) {
+				return
 			}
+			const parentDir = vscode.Uri.joinPath(item.resourceUri, "..")
+			const items = await treeProvider.readDirectory(parentDir)
+			const index = items.findIndex(t => t.name === item.name)
+			if (index <= 0) {
+				return
+			}
+			const temp = items[index]
+			items[index] = items[index - 1]
+			items[index - 1] = temp
+			await saveOrders(treeProvider, parentDir, items)
 		}),
-		vscode.commands.registerCommand("sortedExplorer.moveDown", async (item?: FileTreeItem) => {
-			for (const selction of getSelectedItems(item)) {
-				const parentDir = vscode.Uri.joinPath(selction.resourceUri, "..")
-				const items = await treeProvider.readDirectory(parentDir)
-				const index = items.findIndex(t => t.name === selction.name)
-				if (index < 0 || index >= items.length - 1) {
-					return
-				}
-				const temp = items[index]
-				items[index] = items[index + 1]
-				items[index + 1] = temp
-				await saveOrders(treeProvider, parentDir, items)
+		vscode.commands.registerCommand("sortedExplorer.moveDown", async (item = treeView.selection[0]) => {
+			if (!item) {
+				return
 			}
+			const parentDir = vscode.Uri.joinPath(item.resourceUri, "..")
+			const items = await treeProvider.readDirectory(parentDir)
+			const index = items.findIndex(t => t.name === item.name)
+			if (index < 0 || index >= items.length - 1) {
+				return
+			}
+			const temp = items[index]
+			items[index] = items[index + 1]
+			items[index + 1] = temp
+			await saveOrders(treeProvider, parentDir, items)
 		}),
 	)
 
