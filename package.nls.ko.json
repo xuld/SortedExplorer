@@ -1,6 +1,6 @@
 {
   "extension.displayName": "탐색기 (정렬)",
-  "extension.description": "사용자 정의 규칙 기반 파일/폴더 정렬",
+  "extension.description": "드래그하여 정렬할 수 있는 파일 관리자",
   "views.explorerSort.name": "탐색기 (정렬)",
   "views.explorerSort.content": "폴더가 열려 있지 않습니다.\n[폴더 열기](command:sortedExplorer.openFolder)",
   "commands.openFolder": "폴더 열기",

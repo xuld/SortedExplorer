@@ -1,6 +1,6 @@
 {
   "extension.displayName": "エクスプローラー（並べ替え）",
-  "extension.description": "カスタムルールに基づくファイル/フォルダの並べ替え",
+  "extension.description": "ドラッグで並べ替え可能なファイルマネージャー",
   "views.explorerSort.name": "エクスプローラー（並べ替え）",
   "views.explorerSort.content": "フォルダが開かれていません。\n[フォルダを開く](command:sortedExplorer.openFolder)",
   "commands.openFolder": "フォルダを開く",

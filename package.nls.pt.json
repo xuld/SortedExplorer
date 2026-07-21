@@ -1,6 +1,6 @@
 {
   "extension.displayName": "Explorer (Ordenado)",
-  "extension.description": "Ordenação de arquivos/pastas com regras personalizadas",
+  "extension.description": "Gerenciador de arquivos com ordenação por arrasto",
   "views.explorerSort.name": "Explorer (Ordenado)",
   "views.explorerSort.content": "Nenhuma pasta aberta.\n[Abrir Pasta](command:sortedExplorer.openFolder)",
   "commands.openFolder": "Abrir Pasta",

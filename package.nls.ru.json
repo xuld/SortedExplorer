@@ -1,6 +1,6 @@
 {
   "extension.displayName": "Проводник (Отсортированный)",
-  "extension.description": "Сортировка файлов/папок на основе пользовательских правил",
+  "extension.description": "Менеджер файлов с перетаскиванием для сортировки",
   "views.explorerSort.name": "Проводник (Отсортированный)",
   "views.explorerSort.content": "Папка не открыта.\n[Открыть папку](command:sortedExplorer.openFolder)",
   "commands.openFolder": "Открыть папку",

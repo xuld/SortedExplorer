@@ -1,6 +1,6 @@
 {
   "extension.displayName": "檔案總管（排序）",
-  "extension.description": "基於自訂規則的檔案/資料夾排序",
+  "extension.description": "可以拖動排序的檔案管理員",
   "views.explorerSort.name": "檔案總管（排序）",
   "views.explorerSort.content": "尚未開啟資料夾。\n[開啟資料夾](command:sortedExplorer.openFolder)",
   "commands.openFolder": "開啟資料夾",

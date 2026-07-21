@@ -1,6 +1,6 @@
 {
   "extension.displayName": "Explorer (Ordinato)",
-  "extension.description": "Ordinamento file/cartelle basato su regole personalizzate",
+  "extension.description": "Gestore file con ordinamento trascinabile",
   "views.explorerSort.name": "Explorer (Ordinato)",
   "views.explorerSort.content": "Nessuna cartella aperta.\n[Apri Cartella](command:sortedExplorer.openFolder)",
   "commands.openFolder": "Apri Cartella",

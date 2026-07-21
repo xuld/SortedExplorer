@@ -1,6 +1,6 @@
 {
   "extension.displayName": "Explorateur (Trié)",
-  "extension.description": "Tri de fichiers/dossiers basé sur des règles personnalisées",
+  "extension.description": "Gestionnaire de fichiers triable par glisser-déposer",
   "views.explorerSort.name": "Explorateur (Trié)",
   "views.explorerSort.content": "Aucun dossier n'est ouvert.\n[Ouvrir un dossier](command:sortedExplorer.openFolder)",
   "commands.openFolder": "Ouvrir un dossier",

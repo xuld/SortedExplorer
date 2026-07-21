@@ -1,6 +1,6 @@
 {
   "extension.displayName": "Explorer (Sortiert)",
-  "extension.description": "Datei/Ordner-Sortierung basierend auf benutzerdefinierten Regeln",
+  "extension.description": "Dateimanager mit Drag-and-Drop-Sortierung",
   "views.explorerSort.name": "Explorer (Sortiert)",
   "views.explorerSort.content": "Kein Ordner geöffnet.\n[Ordner öffnen](command:sortedExplorer.openFolder)",
   "commands.openFolder": "Ordner öffnen",

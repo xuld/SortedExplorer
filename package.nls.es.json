@@ -1,6 +1,6 @@
 {
   "extension.displayName": "Explorador (Ordenado)",
-  "extension.description": "Ordenamiento de archivos/carpetas basado en reglas personalizadas",
+  "extension.description": "Administrador de archivos con ordenación por arrastrar",
   "views.explorerSort.name": "Explorador (Ordenado)",
   "views.explorerSort.content": "No hay ninguna carpeta abierta.\n[Abrir Carpeta](command:sortedExplorer.openFolder)",
   "commands.openFolder": "Abrir Carpeta",
