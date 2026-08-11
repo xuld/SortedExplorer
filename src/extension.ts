@@ -136,8 +136,8 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 			await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(item.resourceUri), vscode.ViewColumn.Beside)
 		}),
-		vscode.commands.registerCommand("sortedExplorer.openWith", (item = treeView.selection[0]) => {
-			vscode.commands.executeCommand("vscode.openWith", item.resourceUri)
+		vscode.commands.registerCommand("sortedExplorer.openWith", async (item = treeView.selection[0]) => {
+			await vscode.commands.executeCommand("vscode.openWith", item.resourceUri, "default")
 		}),
 
 		vscode.commands.registerCommand("sortedExplorer.selectForCompare", async (item = treeView.selection[0]) => {

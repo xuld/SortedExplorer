@@ -2,12 +2,12 @@
   "name": "sorted-explorer",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "publisher": "xuld",
   "license": "MIT",
   "icon": "image/icon.png",
   "engines": {
-    "vscode": "^1.125.0"
+    "vscode": "^1.100.0"
   },
   "categories": [
     "Other"
@@ -38,7 +38,7 @@
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
-    "@types/vscode": "^1.125.0",
+    "@types/vscode": "^1.100.0",
     "typescript": "^7.0.2"
   },
   "main": "./dist/extension.js",
