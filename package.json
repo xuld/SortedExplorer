@@ -2,7 +2,7 @@
   "name": "sorted-explorer",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "publisher": "xuld",
   "license": "MIT",
   "icon": "image/icon.png",
@@ -374,7 +374,7 @@
       "editor/title/context": [
         {
           "command": "sortedExplorer.revealInSortedExplorer",
-          "group": "2_workspace@10"
+          "group": "2_files@3"
         }
       ],
       "explorer/context": [
