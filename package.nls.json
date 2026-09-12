@@ -33,6 +33,7 @@
   "commands.revealInWindowsExplorer": "Reveal in Windows Explorer",
   "config.orders": "Sort orders configuration",
   "config.labels": "Custom labels for files/folders",
+  "config.showOrginalNames": "Show original names when labels are set",
   "config.ignore": "Glob patterns for files/folders to ignore",
   "config.foldersFirst": "Show folders before files",
   "config.showNumbers": "Show priority numbers",

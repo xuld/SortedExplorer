@@ -33,6 +33,7 @@
   "commands.revealInWindowsExplorer": "Im Windows Explorer anzeigen",
   "config.orders": "Benutzerdefinierte Sortierung",
   "config.labels": "Benutzerdefinierte Labels für Dateien/Ordner",
+  "config.showOrginalNames": "Originalnamen anzeigen, wenn Labels festgelegt sind",
   "config.ignore": "Zu ignorierende Dateien/Ordner",
   "config.foldersFirst": "Ordner immer oben anzeigen",
   "config.showNumbers": "Nummern anzeigen",

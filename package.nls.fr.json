@@ -33,6 +33,7 @@
   "commands.revealInWindowsExplorer": "Afficher dans l'explorateur Windows",
   "config.orders": "Tri personnalisé",
   "config.labels": "Étiquettes personnalisées pour fichiers/dossiers",
+  "config.showOrginalNames": "Afficher les noms d'origine lorsque des étiquettes sont définies",
   "config.ignore": "Fichiers/dossiers à ignorer",
   "config.foldersFirst": "Toujours mettre les dossiers en haut",
   "config.showNumbers": "Afficher les numéros",

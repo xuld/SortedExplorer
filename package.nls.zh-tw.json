@@ -33,6 +33,7 @@
   "commands.revealInWindowsExplorer": "在檔案總管中顯示",
   "config.orders": "自訂排序",
   "config.labels": "檔案/資料夾的自訂標籤",
+  "config.showOrginalNames": "設定標題後同時顯示原始名稱",
   "config.ignore": "要忽略的檔案/資料夾",
   "config.foldersFirst": "永遠置頂資料夾",
   "config.showNumbers": "顯示編號",

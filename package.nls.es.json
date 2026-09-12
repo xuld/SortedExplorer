@@ -33,6 +33,7 @@
   "commands.revealInWindowsExplorer": "Mostrar en Explorador de Windows",
   "config.orders": "Ordenación Personalizada",
   "config.labels": "Etiquetas Personalizadas para Archivos/Carpetas",
+  "config.showOrginalNames": "Mostrar nombres originales cuando se establecen etiquetas",
   "config.ignore": "Archivos/Carpetas a Ignorar",
   "config.foldersFirst": "Colocar Carpetas Siempre Arriba",
   "config.showNumbers": "Mostrar Números",

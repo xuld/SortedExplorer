@@ -406,7 +406,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 		if (this.workspaceFolders.length === 1) {
 			return await this.readDirectory(this.workspaceFolders[0].uri)
 		}
-		return this.workspaceFolders.map(folder => new FileTreeItem(folder.uri, folder.name, this.config.labels[folder.name] ?? folder.name, false))
+		return this.workspaceFolders.map(folder => new FileTreeItem(folder.uri, folder.name, this.config.labels[folder.name], this.config.showOrginalNames, false))
 	}
 
 	async readDirectory(dirPath: vscode.Uri): Promise<FileTreeItem[]> {
@@ -429,7 +429,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 				const isFile = (fileType & vscode.FileType.File) !== 0
 				const target = isFile ? files : folders
 				const url = vscode.Uri.joinPath(dirPath, fileName)
-				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, this.config.labels[key] ?? fileName, isFile)
+				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, this.config.labels[key], this.config.showOrginalNames, isFile)
 				this.itemsCache.set(item.resourceUri.toString(), item)
 				target.push(item)
 			}
@@ -446,7 +446,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 				const isFile = (fileType & vscode.FileType.File) !== 0
 				const target = isFile ? files : folders
 				const url = vscode.Uri.joinPath(dirPath, fileName)
-				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, this.config.labels[key] ?? fileName, isFile)
+				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, this.config.labels[key], this.config.showOrginalNames, isFile)
 				this.itemsCache.set(item.resourceUri.toString(), item)
 				target.push(item)
 			}
@@ -493,18 +493,20 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 			return cache
 		}
 		const name = path.basename(itemPath.path)
-		const label = this.config.labels[this.getRelativePath(itemPath)] ?? name
-		return new FileTreeItem(itemPath, name, label, false)
+		return new FileTreeItem(itemPath, name, this.config.labels[this.getRelativePath(itemPath)], this.config.showOrginalNames, false)
 	}
 }
 
 class FileTreeItem extends vscode.TreeItem {
 	declare resourceUri: vscode.Uri
 	readonly name: string
-	constructor(resourceUri: vscode.Uri, name: string, label: string, isFile: boolean) {
+	constructor(resourceUri: vscode.Uri, name: string, label: string | undefined, showName: boolean, isFile: boolean) {
 		super(resourceUri)
 		this.name = name
-		this.label = label
+		this.label = label || name
+		if (showName && label) {
+			this.description = name
+		}
 		if (isFile) {
 			this.iconPath = vscode.ThemeIcon.File
 			this.command = { command: "vscode.open", title: "Open File", arguments: [this.resourceUri] }
@@ -523,15 +525,16 @@ class DragDropController implements vscode.TreeDragAndDropController<FileTreeIte
 		this.fileTreeProvider = fileTreeProvider
 	}
 
-	get dragMimeTypes() { return ["text/url-list"] }
-	get dropMimeTypes() { return ["text/url-list"] }
+	get dragMimeTypes() { return ["text/uri-list"] }
+	get dropMimeTypes() { return ["text/uri-list"] }
 
 	handleDrag(source: readonly FileTreeItem[], dataTransfer: vscode.DataTransfer) {
-		dataTransfer.set("text/url-list", new vscode.DataTransferItem(source.map(item => item.resourceUri.toString()).join("\r\n")))
+		dataTransfer.set("text/uri-list", new vscode.DataTransferItem(source.map(item => item.resourceUri.toString()).join("\r\n")))
+		dataTransfer.set("application/vnd.code.tree.sortedExplorer", new vscode.DataTransferItem(source.length.toString()))
 	}
 
 	async handleDrop(target: FileTreeItem | undefined, dataTransfer: vscode.DataTransfer) {
-		const transferItem = dataTransfer.get("text/url-list")
+		const transferItem = dataTransfer.get("text/uri-list")
 		if (!transferItem) {
 			return
 		}
@@ -548,10 +551,11 @@ class DragDropController implements vscode.TreeDragAndDropController<FileTreeIte
 			target = rootItems[rootItems.length - 1]
 		}
 		const sourceUris = dragData.split("\r\n").map(uri => vscode.Uri.parse(uri))
-		await this.dragMove(sourceUris, target.resourceUri, orginalTarget ? orginalTarget.collapsibleState !== vscode.TreeItemCollapsibleState.None : false)
+		const fromExplorer = !!dataTransfer.get("application/vnd.code.tree.sortedExplorer")
+		await this.dragMove(sourceUris, target.resourceUri, orginalTarget ? orginalTarget.collapsibleState !== vscode.TreeItemCollapsibleState.None : false, fromExplorer)
 	}
 
-	private async dragMove(sources: vscode.Uri[], target: vscode.Uri, targetIsDir: boolean) {
+	private async dragMove(sources: vscode.Uri[], target: vscode.Uri, targetIsDir: boolean, move: boolean) {
 		// If target is not in workspace, cannot move
 		if (!vscode.workspace.getWorkspaceFolder(target)) {
 			return
@@ -564,11 +568,15 @@ class DragDropController implements vscode.TreeDragAndDropController<FileTreeIte
 			if (vscode.Uri.joinPath(source, "..").toString() !== targetDirUrl) {
 				// If target is a folder and some source files are not sibling of target, assume users are intent to move files into folders.
 				if (targetIsDir) {
-					await this.moveInto(sources, target)
+					await this.dragInto(sources, target, move)
 					return
 				}
 				const newSource = sources[i] = vscode.Uri.joinPath(targetDir, path.basename(source.path))
-				await moveFile(source, newSource)
+				if (move) {
+					await moveFile(source, newSource)
+				} else {
+					await copyFile(source, newSource)
+				}
 			}
 		}
 		// Detect move direction according to the original order
@@ -579,7 +587,7 @@ class DragDropController implements vscode.TreeDragAndDropController<FileTreeIte
 			const item = items.find(item => item.name === sourceBaseName)
 			return item && item.collapsibleState === vscode.TreeItemCollapsibleState.None
 		})) {
-			await this.moveInto(sources, target)
+			await this.dragInto(sources, target, move)
 			return
 		}
 		const sourceBaseName = path.basename(sources[0].path)
@@ -621,31 +629,53 @@ class DragDropController implements vscode.TreeDragAndDropController<FileTreeIte
 		await saveOrders(this.fileTreeProvider, targetDir, items)
 	}
 
-	private async moveInto(sources: vscode.Uri[], target: vscode.Uri) {
+	private async dragInto(sources: vscode.Uri[], target: vscode.Uri, move: boolean) {
 		for (const source of sources) {
-			await moveFile(source, vscode.Uri.joinPath(target, path.basename(source.path)))
+			const newSource = vscode.Uri.joinPath(target, path.basename(source.path))
+			if (move) {
+				await moveFile(source, newSource)
+			} else {
+				await copyFile(source, newSource)
+			}
 		}
 	}
 }
 
 async function moveFile(from: vscode.Uri, to: vscode.Uri) {
 	try {
-		await vscode.workspace.fs.stat(to)
-	} catch (e) {
 		await vscode.workspace.fs.rename(from, to, {
 			overwrite: false
 		})
-		return
+	} catch (e) {
+		const result = await vscode.window.showWarningMessage(
+			vscode.l10n.t(`The destination already contains a file named "{0}".\n\nDo you want to replace it?`, path.basename(to.path)),
+			{ modal: true },
+			vscode.l10n.t("Replace")
+		)
+		if (result === vscode.l10n.t("Replace")) {
+			await vscode.workspace.fs.rename(from, to, {
+				overwrite: true
+			})
+		}
 	}
-	const result = await vscode.window.showWarningMessage(
-		vscode.l10n.t(`The destination already contains a file named "{0}".\n\nDo you want to replace it?`, path.basename(to.path)),
-		{ modal: true },
-		vscode.l10n.t("Replace")
-	)
-	if (result === vscode.l10n.t("Replace")) {
-		await vscode.workspace.fs.rename(from, to, {
-			overwrite: true
+}
+
+async function copyFile(from: vscode.Uri, to: vscode.Uri) {
+	try {
+		await vscode.workspace.fs.copy(from, to, {
+			overwrite: false
 		})
+	} catch (e) {
+		const result = await vscode.window.showWarningMessage(
+			vscode.l10n.t(`The destination already contains a file named "{0}".\n\nDo you want to replace it?`, path.basename(to.path)),
+			{ modal: true },
+			vscode.l10n.t("Replace")
+		)
+		if (result === vscode.l10n.t("Replace")) {
+			await vscode.workspace.fs.copy(from, to, {
+				overwrite: true
+			})
+		}
 	}
 }
 
@@ -661,6 +691,7 @@ function getConfig(): SortedExplorerConfig {
 	return {
 		orders: parseOrders(configs.get("orders", [] as string[])),
 		labels: configs.get("labels", {} as Record<string, string>),
+		showOrginalNames: configs.get("showOrginalNames", true),
 		ignore: configs.get("ignore", [".DS_Store", ".git", ".idea", ".vs"]),
 		foldersFirst: configs.get("foldersFirst", true),
 		showNumbers: configs.get("showNumbers", false),
@@ -716,8 +747,10 @@ function formatOrders(orders: Map<string, string[]>) {
 interface SortedExplorerConfig {
 	/** Custom file orders */
 	orders: Map<string, string[]>
-	/** Display labels for paths */
+	/** Display titles for paths */
 	labels: Record<string, string>
+	/** Show original names after titles */
+	showOrginalNames: boolean
 	/** Ignore list */
 	ignore: string[]
 	/** Show folders first */

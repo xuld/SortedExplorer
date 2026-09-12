@@ -33,6 +33,7 @@
   "commands.revealInWindowsExplorer": "Показать в Проводнике Windows",
   "config.orders": "Пользовательская сортировка",
   "config.labels": "Пользовательские метки для файлов/папок",
+  "config.showOrginalNames": "Показывать исходные имена при установленных метках",
   "config.ignore": "Файлы/папки для игнорирования",
   "config.foldersFirst": "Всегда отображать папки сверху",
   "config.showNumbers": "Показывать номера",
