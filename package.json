@@ -64,6 +64,14 @@
           },
           "description": "%config.labels%"
         },
+        "sortedExplorer.states": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": {
+            "type": "boolean"
+          },
+          "description": "%config.states%"
+        },
         "sortedExplorer.showOrginalNames": {
           "type": "boolean",
           "default": true,
@@ -91,6 +99,11 @@
           "type": "boolean",
           "default": false,
           "description": "%config.showNumbers%"
+        },
+        "sortedExplorer.showCheckbox": {
+          "type": "boolean",
+          "default": false,
+          "description": "%config.showCheckbox%"
         },
         "sortedExplorer.showListedOnly": {
           "type": "boolean",

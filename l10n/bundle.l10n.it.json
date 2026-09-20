@@ -8,6 +8,7 @@
   "For example: **/*.*,!*.test.*": "Ad esempio: **/*.*,!*.test.*",
   "Please select a file first to compare": "Selezionare prima un file da confrontare",
   "Input duplicate name": "Inserire nome duplicato",
+  "There should be {0} lines in this file.": "Questo file deve contenere {0} righe.",
   "Input new name": "Inserire nuovo nome",
   "Input new label": "Inserire nuova etichetta",
   "Workspace": "Spazio di lavoro",

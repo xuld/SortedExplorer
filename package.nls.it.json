@@ -35,9 +35,11 @@
   "commands.revealInWindowsExplorer": "Mostra in Windows Explorer",
   "config.orders": "Ordinamento Personalizzato",
   "config.labels": "Etichette Personalizzate per File/Cartelle",
+  "config.states": "Stato selezionato per i file",
   "config.showOrginalNames": "Mostra i nomi originali quando vengono impostate etichette",
   "config.ignore": "File/Cartelle da Ignorare",
   "config.foldersFirst": "Sposta Sempre le Cartelle in Alto",
   "config.showNumbers": "Mostra Numeri",
+  "config.showCheckbox": "Mostra casella di controllo",
   "config.showListedOnly": "Mostra Solo Elementi Elencati"
 }

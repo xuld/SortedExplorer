@@ -8,6 +8,7 @@
   "For example: **/*.*,!*.test.*": "例：**/*.*,!*.test.*",
   "Please select a file first to compare": "比較するファイルを先に選択してください",
   "Input duplicate name": "複製名を入力",
+  "There should be {0} lines in this file.": "このファイルには {0} 行必要です。",
   "Input new name": "新しい名前を入力",
   "Input new label": "新しいラベルを入力",
   "Workspace": "ワークスペース",

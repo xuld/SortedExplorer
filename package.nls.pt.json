@@ -35,9 +35,11 @@
   "commands.revealInWindowsExplorer": "Exibir no Windows Explorer",
   "config.orders": "Ordenação Personalizada",
   "config.labels": "Rótulos Personalizados para Arquivos/Pastas",
+  "config.states": "Estado marcado para arquivos",
   "config.showOrginalNames": "Mostrar nomes originais quando rótulos são definidos",
   "config.ignore": "Arquivos/Pastas para Ignorar",
   "config.foldersFirst": "Sempre Colocar Pastas no Topo",
   "config.showNumbers": "Exibir Números",
+  "config.showCheckbox": "Mostrar caixa de seleção",
   "config.showListedOnly": "Exibir Apenas Itens Listados"
 }

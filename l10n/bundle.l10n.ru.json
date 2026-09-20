@@ -8,6 +8,7 @@
   "For example: **/*.*,!*.test.*": "Например: **/*.*,!*.test.*",
   "Please select a file first to compare": "Пожалуйста, сначала выберите файл для сравнения",
   "Input duplicate name": "Введите имя дубликата",
+  "There should be {0} lines in this file.": "В этом файле должно быть {0} строк.",
   "Input new name": "Введите новое имя",
   "Input new label": "Введите новую метку",
   "Workspace": "Рабочая область",

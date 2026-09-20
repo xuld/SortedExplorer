@@ -13,8 +13,8 @@
   "commands.findInFolder": "在文件夹中查找...",
   "commands.newFile": "新建文件...",
   "commands.newFolder": "新建文件夹...",
-  "commands.openAllFiles": "打开全部文件",
-  "commands.renameAllFiles": "重命名全部文件...",
+  "commands.openAllFiles": "打开所有文件",
+  "commands.renameAllFiles": "重命名所有文件...",
   "commands.rename": "重命名...",
   "commands.setLabel": "设置标题...",
   "commands.delete": "删除",
@@ -35,9 +35,11 @@
   "commands.revealInWindowsExplorer": "在文件资源管理器中显示",
   "config.orders": "自定义排序",
   "config.labels": "文件/文件夹的自定义标题",
+  "config.states": "文件的勾选状态",
   "config.showOrginalNames": "设置标题后同时显示原始名称",
   "config.ignore": "要忽略的文件/文件夹",
   "config.foldersFirst": "始终置顶文件夹",
   "config.showNumbers": "显示编号",
+  "config.showCheckbox": "显示复选框",
   "config.showListedOnly": "仅显示已列出的项目"
 }

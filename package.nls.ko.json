@@ -35,9 +35,11 @@
   "commands.revealInWindowsExplorer": "Windows 탐색기에서 표시",
   "config.orders": "사용자 정의 정렬",
   "config.labels": "파일/폴더 사용자 정의 레이블",
+  "config.states": "파일의 체크 상태",
   "config.showOrginalNames": "레이블이 설정된 경우 원래 이름 표시",
   "config.ignore": "무시할 파일/폴더",
   "config.foldersFirst": "폴더 항상 맨 위로",
   "config.showNumbers": "번호 표시",
+  "config.showCheckbox": "체크박스 표시",
   "config.showListedOnly": "목록에 있는 항목만 표시"
 }

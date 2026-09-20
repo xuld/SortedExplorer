@@ -31,10 +31,19 @@ export function activate(context: vscode.ExtensionContext) {
 		dragAndDropController: new DragDropController(treeProvider),
 		canSelectMany: true
 	})
-	context.subscriptions.push(treeView)
+	context.subscriptions.push(treeView, treeView.onDidChangeCheckboxState(async e => {
+		const config = vscode.workspace.getConfiguration(configSection)
+		const states = { ...config.get("states", {} as Record<string, boolean>) }
+		for (const [item, state] of e.items) {
+			const checked = state === vscode.TreeItemCheckboxState.Checked
+			const relativePath = getRelativePath(item.resourceUri)
+			states[relativePath] = checked
+		}
+		await config.update("states", states)
+	}))
 	updateTitle()
 
-	// Sync orders & labels when file renamed
+	// Sync orders & labels & states states when file renamed
 	context.subscriptions.push(vscode.workspace.onDidRenameFiles(async e => {
 		await handleRenameFiles(e.files)
 	}))
@@ -517,7 +526,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 		if (this.workspaceFolders.length === 1) {
 			return await this.readDirectory(this.workspaceFolders[0].uri)
 		}
-		return this.workspaceFolders.map(folder => new FileTreeItem(folder.uri, folder.name, this.config.labels[folder.name], this.config.showOrginalNames, false))
+		return this.workspaceFolders.map(folder => new FileTreeItem(folder.uri, folder.name, this.config.labels[folder.name], this.config.showOrginalNames, this.config.showCheckbox ? !!this.config.states[folder.name] : undefined, false))
 	}
 
 	async readDirectory(dirPath: vscode.Uri): Promise<FileTreeItem[]> {
@@ -540,7 +549,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 				const isFile = (fileType & vscode.FileType.File) !== 0
 				const target = isFile ? files : folders
 				const url = vscode.Uri.joinPath(dirPath, fileName)
-				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, this.config.labels[key], this.config.showOrginalNames, isFile)
+				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, this.config.labels[key], this.config.showOrginalNames, this.config.showCheckbox ? !!this.config.states[key] : undefined, isFile)
 				this.itemsCache.set(item.resourceUri.toString(), item)
 				target.push(item)
 			}
@@ -557,7 +566,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 				const isFile = (fileType & vscode.FileType.File) !== 0
 				const target = isFile ? files : folders
 				const url = vscode.Uri.joinPath(dirPath, fileName)
-				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, this.config.labels[key], this.config.showOrginalNames, isFile)
+				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, this.config.labels[key], this.config.showOrginalNames, this.config.showCheckbox ? !!this.config.states[key] : undefined, isFile)
 				this.itemsCache.set(item.resourceUri.toString(), item)
 				target.push(item)
 			}
@@ -599,15 +608,15 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 		if (cache) {
 			return cache
 		}
-		const name = path.basename(itemPath.path)
-		return new FileTreeItem(itemPath, name, this.config.labels[getRelativePath(itemPath)], this.config.showOrginalNames, false)
+		const key = getRelativePath(itemPath)
+		return new FileTreeItem(itemPath, path.basename(itemPath.path), this.config.labels[key], this.config.showOrginalNames, this.config.showCheckbox ? !!this.config.states[key] : undefined, false)
 	}
 }
 
 class FileTreeItem extends vscode.TreeItem {
 	declare resourceUri: vscode.Uri
 	readonly name: string
-	constructor(resourceUri: vscode.Uri, name: string, label: string | undefined, showName: boolean, isFile: boolean) {
+	constructor(resourceUri: vscode.Uri, name: string, label: string | undefined, showName: boolean, checked: boolean | undefined, isFile: boolean) {
 		super(resourceUri)
 		this.name = name
 		this.label = label || name
@@ -623,6 +632,9 @@ class FileTreeItem extends vscode.TreeItem {
 			this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed
 		}
 		this.contextValue = isFile ? "file" : "folder"
+		if (checked !== undefined) {
+			this.checkboxState = checked ? vscode.TreeItemCheckboxState.Checked : vscode.TreeItemCheckboxState.Unchecked
+		}
 	}
 }
 
@@ -631,9 +643,11 @@ function getConfig(): SortedExplorerConfig {
 	return {
 		orders: parseOrders(configs.get("orders", [] as string[])),
 		labels: configs.get("labels", {} as Record<string, string>),
+		states: configs.get("states", {} as Record<string, boolean>),
 		showOrginalNames: configs.get("showOrginalNames", true),
 		ignore: configs.get("ignore", [".DS_Store", ".git", ".idea", ".vs"]),
 		foldersFirst: configs.get("foldersFirst", true),
+		showCheckbox: configs.get("showCheckbox", false),
 		showNumbers: configs.get("showNumbers", false),
 		showListedOnly: configs.get("showListedOnly", false),
 	}
@@ -644,12 +658,16 @@ interface SortedExplorerConfig {
 	orders: Map<string, string[]>
 	/** Display titles for paths */
 	labels: Record<string, string>
+	/** Checked state for paths */
+	states: Record<string, boolean>
 	/** Show original names after titles */
 	showOrginalNames: boolean
 	/** Ignore list */
 	ignore: string[]
 	/** Show folders first */
 	foldersFirst: boolean
+	/** Show checkbox */
+	showCheckbox: boolean
 	/** Show only items listed in the orders */
 	showListedOnly: boolean
 	/** Show numbers before items */
@@ -897,8 +915,10 @@ async function handleRenameFiles(files: readonly { readonly oldUri: vscode.Uri, 
 	const config = vscode.workspace.getConfiguration(configSection)
 	const orders = config.get("orders", [] as string[])
 	const labels = config.get("labels", {} as Record<string, string>)
+	const states = config.get("states", {} as Record<string, boolean>)
 	let saveOrders = false
 	let newLabels = labels
+	let newStates = states
 	for (const file of files) {
 		const oldPath = getRelativePath(file.oldUri)
 		const newPath = getRelativePath(file.newUri)
@@ -911,12 +931,18 @@ async function handleRenameFiles(files: readonly { readonly oldUri: vscode.Uri, 
 		if (oldPath in labels) {
 			newLabels = replaceKey(newLabels, oldPath, newPath)
 		}
+		if (oldPath in states) {
+			newStates = replaceKey(states, oldPath, newPath)
+		}
 	}
 	if (saveOrders) {
 		await config.update("orders", orders)
 	}
 	if (newLabels !== labels) {
 		await config.update("labels", newLabels)
+	}
+	if (newStates !== states) {
+		await config.update("states", newStates)
 	}
 }
 
@@ -935,7 +961,9 @@ function replaceKey(obj: Record<string, any>, from: string, to: string) {
 async function handleCopyFiles(files: readonly { readonly oldUri: vscode.Uri, readonly newUri: vscode.Uri }[]) {
 	const config = vscode.workspace.getConfiguration(configSection)
 	const labels = config.get("labels", {} as Record<string, string>)
+	const states = config.get("states", {} as Record<string, boolean>)
 	let newLabels = labels
+	let newStates = states
 	for (const file of files) {
 		const oldPath = getRelativePath(file.oldUri)
 		const newPath = getRelativePath(file.newUri)
@@ -945,9 +973,18 @@ async function handleCopyFiles(files: readonly { readonly oldUri: vscode.Uri, re
 			}
 			newLabels[newPath] = labels[oldPath]
 		}
+		if (oldPath in newStates) {
+			if (newStates === states) {
+				newStates = { ...states }
+			}
+			newStates[newPath] = states[oldPath]
+		}
 	}
 	if (newLabels !== labels) {
 		await config.update("labels", newLabels)
+	}
+	if (newStates !== states) {
+		await config.update("states", newStates)
 	}
 }
 
@@ -955,8 +992,10 @@ async function handleDeleteFiles(files: readonly vscode.Uri[]) {
 	const config = vscode.workspace.getConfiguration(configSection)
 	const orders = config.get("orders", [] as string[])
 	const labels = config.get("labels", {} as Record<string, string>)
+	const states = config.get("states", {} as Record<string, boolean>)
 	let saveOrders = false
 	let newLabels = labels
+	let newStates = states
 	for (const file of files) {
 		const path = getRelativePath(file)
 		for (let i = orders.length - 1; i >= 0; i--) {
@@ -971,12 +1010,21 @@ async function handleDeleteFiles(files: readonly vscode.Uri[]) {
 			}
 			delete newLabels[path]
 		}
+		if (path in newStates) {
+			if (newStates === states) {
+				newStates = { ...states }
+			}
+			delete newStates[path]
+		}
 	}
 	if (saveOrders) {
 		await config.update("orders", orders)
 	}
 	if (newLabels !== labels) {
 		await config.update("labels", newLabels)
+	}
+	if (newStates !== states) {
+		await config.update("states", newStates)
 	}
 }
 

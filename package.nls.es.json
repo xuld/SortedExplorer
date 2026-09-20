@@ -35,9 +35,11 @@
   "commands.revealInWindowsExplorer": "Mostrar en Explorador de Windows",
   "config.orders": "Ordenación Personalizada",
   "config.labels": "Etiquetas Personalizadas para Archivos/Carpetas",
+  "config.states": "Estado marcado para archivos",
   "config.showOrginalNames": "Mostrar nombres originales cuando se establecen etiquetas",
   "config.ignore": "Archivos/Carpetas a Ignorar",
   "config.foldersFirst": "Colocar Carpetas Siempre Arriba",
   "config.showNumbers": "Mostrar Números",
+  "config.showCheckbox": "Mostrar casilla de verificación",
   "config.showListedOnly": "Mostrar Solo Elementos Listados"
 }

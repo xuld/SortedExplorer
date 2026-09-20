@@ -8,6 +8,7 @@
   "For example: **/*.*,!*.test.*": "例如：**/*.*,!*.test.*",
   "Please select a file first to compare": "请先选择一个文件进行比较",
   "Input duplicate name": "输入副本名称",
+  "There should be {0} lines in this file.": "此文件应包含 {0} 行。",
   "Input new name": "输入新名称",
   "Input new label": "输入新标题",
   "Workspace": "工作空间",

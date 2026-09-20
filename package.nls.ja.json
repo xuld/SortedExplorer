@@ -35,9 +35,11 @@
   "commands.revealInWindowsExplorer": "Windowsエクスプローラーで表示",
   "config.orders": "カスタム並べ替え",
   "config.labels": "ファイル/フォルダのカスタムラベル",
+  "config.states": "ファイルのチェック状態",
   "config.showOrginalNames": "ラベル設定時に元の名前を表示",
   "config.ignore": "無視するファイル/フォルダ",
   "config.foldersFirst": "フォルダを常に一番上に",
   "config.showNumbers": "番号を表示",
+  "config.showCheckbox": "チェックボックスを表示",
   "config.showListedOnly": "リストに表示されている項目のみを表示"
 }

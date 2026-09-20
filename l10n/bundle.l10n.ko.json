@@ -8,6 +8,7 @@
   "For example: **/*.*,!*.test.*": "예: **/*.*,!*.test.*",
   "Please select a file first to compare": "먼저 비교할 파일을 선택하세요",
   "Input duplicate name": "복제 이름 입력",
+  "There should be {0} lines in this file.": "이 파일에는 {0}줄이 있어야 합니다.",
   "Input new name": "새 이름 입력",
   "Input new label": "새 레이블 입력",
   "Workspace": "작업 영역",
