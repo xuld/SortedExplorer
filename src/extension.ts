@@ -37,7 +37,11 @@ export function activate(context: vscode.ExtensionContext) {
 		for (const [item, state] of e.items) {
 			const checked = state === vscode.TreeItemCheckboxState.Checked
 			const relativePath = getRelativePath(item.resourceUri)
-			states[relativePath] = checked
+			if (checked) {
+				states[relativePath] = true
+			} else {
+				delete states[relativePath]
+			}
 		}
 		await config.update("states", states)
 	}))
@@ -463,11 +467,11 @@ export function activate(context: vscode.ExtensionContext) {
 
 		vscode.commands.registerCommand("sortedExplorer.toggleCheckbox", () => {
 			const config = vscode.workspace.getConfiguration(configSection)
-			config.update("showCheckbox", !config.get("showCheckbox", false))
+			config.update("showCheckbox", !config.get("showCheckbox", false), vscode.ConfigurationTarget.Global)
 		}),
 		vscode.commands.registerCommand("sortedExplorer.toggleNumbers", () => {
 			const config = vscode.workspace.getConfiguration(configSection)
-			config.update("showNumbers", !config.get("showNumbers", false))
+			config.update("showNumbers", !config.get("showNumbers", false), vscode.ConfigurationTarget.Global)
 		}),
 	)
 
