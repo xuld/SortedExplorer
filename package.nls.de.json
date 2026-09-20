@@ -33,6 +33,8 @@
   "commands.moveDown": "Nach unten bewegen",
   "commands.revealInSortedExplorer": "Im Explorer (Sortiert) anzeigen",
   "commands.revealInWindowsExplorer": "Im Windows Explorer anzeigen",
+  "commands.toggleCheckbox": "Checkboxes ein-/ausblenden",
+  "commands.toggleNumbers": "Nummern ein-/ausblenden",
   "config.orders": "Benutzerdefinierte Sortierung",
   "config.labels": "Benutzerdefinierte Labels für Dateien/Ordner",
   "config.states": "Aktivierter Status für Dateien",

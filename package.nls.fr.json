@@ -33,6 +33,8 @@
   "commands.moveDown": "Descendre",
   "commands.revealInSortedExplorer": "Afficher dans Explorateur (Trié)",
   "commands.revealInWindowsExplorer": "Afficher dans l'explorateur Windows",
+  "commands.toggleCheckbox": "Afficher/Masquer les cases à cocher",
+  "commands.toggleNumbers": "Afficher/Masquer les numéros",
   "config.orders": "Tri personnalisé",
   "config.labels": "Étiquettes personnalisées pour fichiers/dossiers",
   "config.states": "État coché pour les fichiers",

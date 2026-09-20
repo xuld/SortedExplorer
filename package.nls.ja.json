@@ -33,6 +33,8 @@
   "commands.moveDown": "下に移動",
   "commands.revealInSortedExplorer": "エクスプローラー（並べ替え）で表示",
   "commands.revealInWindowsExplorer": "Windowsエクスプローラーで表示",
+  "commands.toggleCheckbox": "チェックボックスの表示/非表示",
+  "commands.toggleNumbers": "番号の表示/非表示",
   "config.orders": "カスタム並べ替え",
   "config.labels": "ファイル/フォルダのカスタムラベル",
   "config.states": "ファイルのチェック状態",

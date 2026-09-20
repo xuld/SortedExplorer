@@ -33,6 +33,8 @@
   "commands.moveDown": "Move Down",
   "commands.revealInSortedExplorer": "Reveal in Sorted Explorer",
   "commands.revealInWindowsExplorer": "Reveal in Windows Explorer",
+  "commands.toggleCheckbox": "Show/Hide Checkboxs",
+  "commands.toggleNumbers": "Show/Hide Numbers",
   "config.orders": "Sort orders configuration",
   "config.labels": "Custom labels for files/folders",
   "config.states": "Checked state for files",

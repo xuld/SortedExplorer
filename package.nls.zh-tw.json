@@ -33,6 +33,8 @@
   "commands.moveDown": "下移",
   "commands.revealInSortedExplorer": "在檔案總管（排序）中顯示",
   "commands.revealInWindowsExplorer": "在檔案總管中顯示",
+  "commands.toggleCheckbox": "顯示/隱藏核取方塊",
+  "commands.toggleNumbers": "顯示/隱藏編號",
   "config.orders": "自訂排序",
   "config.labels": "檔案/資料夾的自訂標籤",
   "config.states": "檔案的勾選狀態",

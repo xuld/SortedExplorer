@@ -33,6 +33,8 @@
   "commands.moveDown": "Sposta Giù",
   "commands.revealInSortedExplorer": "Mostra in Explorer (Ordinato)",
   "commands.revealInWindowsExplorer": "Mostra in Windows Explorer",
+  "commands.toggleCheckbox": "Mostra/Nascondi caselle di controllo",
+  "commands.toggleNumbers": "Mostra/Nascondi numeri",
   "config.orders": "Ordinamento Personalizzato",
   "config.labels": "Etichette Personalizzate per File/Cartelle",
   "config.states": "Stato selezionato per i file",

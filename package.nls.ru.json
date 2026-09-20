@@ -33,6 +33,8 @@
   "commands.moveDown": "Переместить вниз",
   "commands.revealInSortedExplorer": "Показать в Проводнике (Отсортированный)",
   "commands.revealInWindowsExplorer": "Показать в Проводнике Windows",
+  "commands.toggleCheckbox": "Показать/скрыть флажки",
+  "commands.toggleNumbers": "Показать/скрыть номера",
   "config.orders": "Пользовательская сортировка",
   "config.labels": "Пользовательские метки для файлов/папок",
   "config.states": "Отмеченное состояние для файлов",

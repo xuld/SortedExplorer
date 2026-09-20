@@ -460,6 +460,15 @@ export function activate(context: vscode.ExtensionContext) {
 			items[index + 1] = temp
 			await saveOrders(treeProvider, parentDir, items)
 		}),
+
+		vscode.commands.registerCommand("sortedExplorer.toggleCheckbox", () => {
+			const config = vscode.workspace.getConfiguration(configSection)
+			config.update("showCheckbox", !config.get("showCheckbox", false))
+		}),
+		vscode.commands.registerCommand("sortedExplorer.toggleNumbers", () => {
+			const config = vscode.workspace.getConfiguration(configSection)
+			config.update("showNumbers", !config.get("showNumbers", false))
+		}),
 	)
 
 	function updateTitle() {
@@ -497,7 +506,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 		return this.config
 	}
 
-	setConfig(config: SortedExplorerConfig) {
+	setConfig(config: SortedExplorerConfig, callback?: () => void) {
 		this.config = config
 		this.refresh()
 	}
@@ -508,7 +517,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 
 	refreshTimer: NodeJS.Timeout | undefined = undefined
 
-	refresh() {
+	refresh(callback?: () => void) {
 		if (this.refreshTimer) {
 			clearTimeout(this.refreshTimer)
 		}
@@ -516,6 +525,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 			this.refreshTimer = undefined
 			this.itemsCache.clear()
 			this.didChangeTreeDataEvent.fire()
+			callback?.()
 		}, 50)
 	}
 
@@ -573,10 +583,26 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 		}
 		if (this.config.foldersFirst) {
 			folders.push(...files)
-		}
-		if (this.config.showNumbers) {
-			for (let i = 0; i < folders.length; i++) {
-				folders[i].label = `${i + 1}. ${folders[i].label}`
+			if (this.config.showNumbers) {
+				let count = 1
+				for (const folder of folders) {
+					folder.label = `${count}. ${folder.label}`
+					count++
+				}
+			}
+		} else {
+			if (this.config.showNumbers) {
+				let dirCount = 1
+				let fileCount = 1
+				for (const folder of folders) {
+					if (folder.collapsibleState === vscode.TreeItemCollapsibleState.None) {
+						folder.label = `${fileCount}. ${folder.label}`
+						fileCount++
+					} else {
+						folder.label = `${dirCount}. ${folder.label}`
+						dirCount++
+					}
+				}
 			}
 		}
 		return folders

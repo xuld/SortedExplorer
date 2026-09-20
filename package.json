@@ -255,6 +255,14 @@
         "command": "sortedExplorer.moveDown",
         "title": "%commands.moveDown%",
         "icon": "$(arrow-down)"
+      },
+      {
+        "command": "sortedExplorer.toggleCheckbox",
+        "title": "%commands.toggleCheckbox%"
+      },
+      {
+        "command": "sortedExplorer.toggleNumbers",
+        "title": "%commands.toggleNumbers%"
       }
     ],
     "menus": {
@@ -405,6 +413,16 @@
           "command": "sortedExplorer.moveDown",
           "when": "view == sortedExplorer",
           "group": "6_priority@3"
+        },
+        {
+          "command": "sortedExplorer.toggleCheckbox",
+          "when": "view == sortedExplorer",
+          "group": "z_settings@1"
+        },
+        {
+          "command": "sortedExplorer.toggleNumbers",
+          "when": "view == sortedExplorer",
+          "group": "z_settings@2"
         }
       ],
       "editor/title/context": [
