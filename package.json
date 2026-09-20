@@ -396,24 +396,24 @@
       ],
       "editor/title/context": [
         {
-          "command": "sortedExplorer.openAllFiles",
-          "group": "navigation",
-          "when": "explorerResourceIsFolder"
-        },
-        {
           "command": "sortedExplorer.revealInSortedExplorer",
           "group": "2_files@3"
-        },
-        {
-          "command": "sortedExplorer.renameAllFiles",
-          "group": "7_modification",
-          "when": "explorerResourceIsFolder"
         }
       ],
       "explorer/context": [
         {
+          "command": "sortedExplorer.openAllFiles",
+          "group": "navigation@19",
+          "when": "explorerResourceIsFolder"
+        },
+        {
           "command": "sortedExplorer.revealInSortedExplorer",
-          "group": "navigation@100"
+          "group": "navigation@21"
+        },
+        {
+          "command": "sortedExplorer.renameAllFiles",
+          "group": "7_modification@10",
+          "when": "explorerResourceIsFolder"
         }
       ]
     },

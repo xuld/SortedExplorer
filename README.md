@@ -7,6 +7,8 @@ A powerful VS Code extension that allows you to sort files and folders and reord
 1. Sort files and folders using drag & drop.
 2. Set custom labels.
 3. Show numbers before items.
-4. Support multiple languages.
+4. Open files in directory at once.
+5. Rename all files in directory at once.
+6. Support multiple languages.
 
 ![Sorted Explorer](./image/screenshot.gif)

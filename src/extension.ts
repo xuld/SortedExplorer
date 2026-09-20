@@ -149,6 +149,7 @@ export function activate(context: vscode.ExtensionContext) {
 			vscode.window.createTerminal({ cwd: dir }).show()
 		}),
 		vscode.commands.registerCommand("sortedExplorer.openAllFiles", async (item: FileTreeItem = treeView.selection[0]) => {
+			if (item instanceof vscode.Uri) item = { resourceUri: item } as any
 			const dir = item ? item.collapsibleState !== vscode.TreeItemCollapsibleState.None ? item.resourceUri : vscode.Uri.joinPath(item.resourceUri, "..") : vscode.workspace.workspaceFolders?.[0].uri
 			if (!dir) {
 				return
@@ -331,6 +332,7 @@ export function activate(context: vscode.ExtensionContext) {
 		}),
 
 		vscode.commands.registerCommand("sortedExplorer.renameAllFiles", async (item: FileTreeItem = treeView.selection[0]) => {
+			if (item instanceof vscode.Uri) item = { resourceUri: item } as any
 			const dir = item ? item.collapsibleState !== vscode.TreeItemCollapsibleState.None ? item.resourceUri : vscode.Uri.joinPath(item.resourceUri, "..") : vscode.workspace.workspaceFolders?.[0].uri
 			if (!dir) {
 				return
