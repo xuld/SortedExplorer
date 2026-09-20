@@ -584,14 +584,6 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 		if (this.config.foldersFirst) {
 			folders.push(...files)
 			if (this.config.showNumbers) {
-				let count = 1
-				for (const folder of folders) {
-					folder.label = `${count}. ${folder.label}`
-					count++
-				}
-			}
-		} else {
-			if (this.config.showNumbers) {
 				let dirCount = 1
 				let fileCount = 1
 				for (const folder of folders) {
@@ -602,6 +594,14 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 						folder.label = `${dirCount}. ${folder.label}`
 						dirCount++
 					}
+				}
+			}
+		} else {
+			if (this.config.showNumbers) {
+				let count = 1
+				for (const folder of folders) {
+					folder.label = `${count}. ${folder.label}`
+					count++
 				}
 			}
 		}
