@@ -131,6 +131,14 @@
         "icon": "$(new-folder)"
       },
       {
+        "command": "sortedExplorer.openAllFiles",
+        "title": "%commands.openAllFiles%"
+      },
+      {
+        "command": "sortedExplorer.renameAllFiles",
+        "title": "%commands.renameAllFiles%"
+      },
+      {
         "command": "sortedExplorer.refresh",
         "title": "%commands.refresh%",
         "icon": "$(refresh)"
@@ -263,42 +271,47 @@
         {
           "command": "sortedExplorer.newFile",
           "when": "view == sortedExplorer && viewItem != file",
-          "group": "0_open@1"
+          "group": "0_open@10"
         },
         {
           "command": "sortedExplorer.newFolder",
           "when": "view == sortedExplorer && viewItem != file",
-          "group": "0_open@2"
+          "group": "0_open@20"
+        },
+        {
+          "command": "sortedExplorer.openAllFiles",
+          "when": "view == sortedExplorer && viewItem != file",
+          "group": "0_open@30"
         },
         {
           "command": "sortedExplorer.revealInFinder",
           "when": "view == sortedExplorer && isMac",
-          "group": "0_open@3"
+          "group": "0_open@40"
         },
         {
           "command": "sortedExplorer.revealInWindowsExplorer",
           "when": "view == sortedExplorer && isWindows",
-          "group": "0_open@4"
+          "group": "0_open@50"
         },
         {
           "command": "sortedExplorer.revealInExplorer",
           "when": "view == sortedExplorer",
-          "group": "0_open@5"
+          "group": "0_open@60"
         },
         {
           "command": "sortedExplorer.openInTerminal",
           "when": "view == sortedExplorer && viewItem == folder",
-          "group": "0_open@6"
+          "group": "0_open@70"
         },
         {
           "command": "sortedExplorer.openToSide",
           "when": "view == sortedExplorer && viewItem == file",
-          "group": "0_open@7"
+          "group": "0_open@80"
         },
         {
           "command": "sortedExplorer.openWith",
           "when": "view == sortedExplorer && viewItem == file",
-          "group": "0_open@8"
+          "group": "0_open@90"
         },
         {
           "command": "sortedExplorer.findInFolder",
@@ -356,6 +369,11 @@
           "group": "5_edit@1"
         },
         {
+          "command": "sortedExplorer.renameAllFiles",
+          "when": "view == sortedExplorer && viewItem == folder",
+          "group": "5_edit@2"
+        },
+        {
           "command": "sortedExplorer.delete",
           "when": "view == sortedExplorer",
           "group": "5_edit@3"
@@ -378,8 +396,18 @@
       ],
       "editor/title/context": [
         {
+          "command": "sortedExplorer.openAllFiles",
+          "group": "navigation",
+          "when": "explorerResourceIsFolder"
+        },
+        {
           "command": "sortedExplorer.revealInSortedExplorer",
           "group": "2_files@3"
+        },
+        {
+          "command": "sortedExplorer.renameAllFiles",
+          "group": "7_modification",
+          "when": "explorerResourceIsFolder"
         }
       ],
       "explorer/context": [

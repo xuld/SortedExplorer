@@ -13,6 +13,8 @@
   "commands.findInFolder": "フォルダ内を検索...",
   "commands.newFile": "新しいファイル...",
   "commands.newFolder": "新しいフォルダ...",
+  "commands.openAllFiles": "すべてのファイルを開く",
+  "commands.renameAllFiles": "すべてのファイル名を変更...",
   "commands.rename": "名前を変更...",
   "commands.setLabel": "ラベルを設定...",
   "commands.delete": "削除",

@@ -13,6 +13,8 @@
   "commands.findInFolder": "Buscar en la Carpeta...",
   "commands.newFile": "Nuevo Archivo...",
   "commands.newFolder": "Nueva Carpeta...",
+  "commands.openAllFiles": "Abrir todos los archivos",
+  "commands.renameAllFiles": "Renombrar todos los archivos...",
   "commands.rename": "Renombrar...",
   "commands.setLabel": "Establecer Etiqueta...",
   "commands.delete": "Eliminar",

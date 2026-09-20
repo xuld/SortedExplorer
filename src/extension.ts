@@ -1,5 +1,6 @@
 import * as vscode from "vscode"
 import * as path from "path"
+import * as os from "os"
 
 const configSection = "sortedExplorer"
 
@@ -140,12 +141,53 @@ export function activate(context: vscode.ExtensionContext) {
 				expand: true
 			})
 		}),
-		vscode.commands.registerCommand("sortedExplorer.openInTerminal", (item = treeView.selection[0]) => {
+		vscode.commands.registerCommand("sortedExplorer.openInTerminal", (item: FileTreeItem = treeView.selection[0]) => {
 			const dir = item ? item.collapsibleState !== vscode.TreeItemCollapsibleState.None ? item.resourceUri : vscode.Uri.joinPath(item.resourceUri, "..") : vscode.workspace.workspaceFolders?.[0].uri
 			if (!dir) {
 				return
 			}
 			vscode.window.createTerminal({ cwd: dir }).show()
+		}),
+		vscode.commands.registerCommand("sortedExplorer.openAllFiles", async (item: FileTreeItem = treeView.selection[0]) => {
+			const dir = item ? item.collapsibleState !== vscode.TreeItemCollapsibleState.None ? item.resourceUri : vscode.Uri.joinPath(item.resourceUri, "..") : vscode.workspace.workspaceFolders?.[0].uri
+			if (!dir) {
+				return
+			}
+			const maxFilesWithoutConfirmation = 10
+			let files = await vscode.workspace.findFiles(new vscode.RelativePattern(dir, "**/*"))
+			if (files.length == 0) {
+				vscode.window.showInformationMessage(vscode.l10n.t("No files found in folder."))
+				return
+			}
+			if (maxFilesWithoutConfirmation >= 0 && files.length >= maxFilesWithoutConfirmation) {
+				const pattern = await vscode.window.showInputBox({
+					title: vscode.l10n.t("Are you sure you want to open {0} files at once?", files.length),
+					prompt: vscode.l10n.t("Please input a glob to open"),
+					placeHolder: vscode.l10n.t("For example: **/*.*,!*.test.*"),
+					value: "**/*",
+				})
+				if (!pattern) {
+					return
+				}
+				if (pattern !== "**/*") {
+					let excludePattern = ""
+					const includePattern = pattern.replace(/(?:^|,)!((?:\{[^}]*\}|\[[^\]]*\]|[^,])*)(?=,|$)/g, (source, pattern) => {
+						if (excludePattern) {
+							excludePattern += ","
+						}
+						excludePattern += pattern
+						return ""
+					})
+					files = await vscode.workspace.findFiles(new vscode.RelativePattern(dir, includePattern), excludePattern ? new vscode.RelativePattern(dir, excludePattern) : undefined)
+				}
+			}
+
+			files.sort((x, y) => x.fsPath < y.fsPath ? -1 : x.fsPath > y.fsPath ? 1 : 0)
+			for (const file of files) {
+				vscode.commands.executeCommand("vscode.open", file, {
+					preview: false
+				})
+			}
 		}),
 
 		vscode.commands.registerCommand("sortedExplorer.openFile", async (uri: vscode.Uri) => {
@@ -282,12 +324,61 @@ export function activate(context: vscode.ExtensionContext) {
 			await vscode.env.clipboard.writeText(item.resourceUri.fsPath ?? item.resourceUri.toString())
 		}),
 		vscode.commands.registerCommand("sortedExplorer.copyRelativePath", async (item = treeView.selection[0]) => {
-			if (item) {
+			if (!item) {
 				return
 			}
 			await vscode.env.clipboard.writeText(vscode.workspace.asRelativePath(item.resourceUri))
 		}),
 
+		vscode.commands.registerCommand("sortedExplorer.renameAllFiles", async (item: FileTreeItem = treeView.selection[0]) => {
+			const dir = item ? item.collapsibleState !== vscode.TreeItemCollapsibleState.None ? item.resourceUri : vscode.Uri.joinPath(item.resourceUri, "..") : vscode.workspace.workspaceFolders?.[0].uri
+			if (!dir) {
+				return
+			}
+			const files = await vscode.workspace.findFiles(new vscode.RelativePattern(dir, "**/*"))
+			if (files.length == 0) {
+				vscode.window.showInformationMessage(vscode.l10n.t("No files found in folder."))
+				return
+			}
+			files.sort((x, y) => x.fsPath < y.fsPath ? -1 : x.fsPath > y.fsPath ? 1 : 0)
+			const oldNames = files.map(file => path.relative(dir.fsPath, file.fsPath).replaceAll("\\", "/"))
+			const tempFile = vscode.Uri.file(path.join(os.tmpdir(), "sortedExplorer.newNames.txt"))
+			await vscode.workspace.fs.writeFile(tempFile, Buffer.from(oldNames.join("\n")))
+			const event = vscode.workspace.onWillSaveTextDocument(async e => {
+				if (e.document == document && e.reason == vscode.TextDocumentSaveReason.Manual) {
+					let newNames = document.getText().split(/\r?\n/).filter(line => !!line)
+					if (newNames.length !== oldNames.length) {
+						await vscode.window.showErrorMessage(vscode.l10n.t("There should be {0} lines in this file.", oldNames.length))
+						return
+					}
+					const edit = new vscode.WorkspaceEdit()
+					for (let i = 0; i < oldNames.length; i++) {
+						const oldName = oldNames[i]
+						const newName = newNames[i]
+						if (oldName !== newName) {
+							edit.renameFile(vscode.Uri.joinPath(dir, oldName), vscode.Uri.joinPath(dir, newName), { overwrite: false })
+						}
+					}
+					if (await vscode.workspace.applyEdit(edit)) {
+						event.dispose()
+						setTimeout(async () => {
+							const tab = vscode.window.tabGroups.all
+								.flatMap(group => group.tabs)
+								.find(tab =>
+									tab.input instanceof vscode.TabInputText &&
+									tab.input.uri.toString() === document.uri.toString()
+								)
+							if (tab) {
+								await vscode.window.tabGroups.close(tab)
+							}
+							await vscode.workspace.fs.delete(tempFile)
+						}, 80)
+					}
+				}
+			})
+			const document = await vscode.workspace.openTextDocument(tempFile)
+			await vscode.window.showTextDocument(document)
+		}),
 		vscode.commands.registerCommand("sortedExplorer.rename", async (item = treeView.selection[0]) => {
 			if (!item) {
 				return
@@ -474,7 +565,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 		}
 		if (this.config.showNumbers) {
 			for (let i = 0; i < folders.length; i++) {
-				folders[i].label = `[${i + 1}] ${folders[i].label}`
+				folders[i].label = `${i + 1}. ${folders[i].label}`
 			}
 		}
 		return folders

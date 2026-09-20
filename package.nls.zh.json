@@ -13,6 +13,8 @@
   "commands.findInFolder": "在文件夹中查找...",
   "commands.newFile": "新建文件...",
   "commands.newFolder": "新建文件夹...",
+  "commands.openAllFiles": "打开全部文件",
+  "commands.renameAllFiles": "重命名全部文件...",
   "commands.rename": "重命名...",
   "commands.setLabel": "设置标题...",
   "commands.delete": "删除",

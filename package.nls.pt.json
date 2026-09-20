@@ -13,6 +13,8 @@
   "commands.findInFolder": "Procurar na Pasta...",
   "commands.newFile": "Novo Arquivo...",
   "commands.newFolder": "Nova Pasta...",
+  "commands.openAllFiles": "Abrir todos os arquivos",
+  "commands.renameAllFiles": "Renomear todos os arquivos...",
   "commands.rename": "Renomear...",
   "commands.setLabel": "Definir Rótulo...",
   "commands.delete": "Excluir",

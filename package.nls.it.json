@@ -13,6 +13,8 @@
   "commands.findInFolder": "Cerca nella Cartella...",
   "commands.newFile": "Nuovo File...",
   "commands.newFolder": "Nuova Cartella...",
+  "commands.openAllFiles": "Apri tutti i file",
+  "commands.renameAllFiles": "Rinomina tutti i file...",
   "commands.rename": "Rinomina...",
   "commands.setLabel": "Imposta Etichetta...",
   "commands.delete": "Elimina",
