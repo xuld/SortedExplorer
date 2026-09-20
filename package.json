@@ -2,7 +2,7 @@
   "name": "sorted-explorer",
   "displayName": "%extension.displayName%",
   "description": "%extension.description%",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "publisher": "xuld",
   "license": "MIT",
   "icon": "image/icon.png",

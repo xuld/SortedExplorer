@@ -474,7 +474,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 		}
 		if (this.config.showNumbers) {
 			for (let i = 0; i < folders.length; i++) {
-				folders[i].description = ` [${i + 1}]`
+				folders[i].label = `[${i + 1}] ${folders[i].label}`
 			}
 		}
 		return folders

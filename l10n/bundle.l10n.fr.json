@@ -7,6 +7,7 @@
   "Input new name": "Saisir le nouveau nom",
   "Input new label": "Saisir la nouvelle étiquette",
   "No workspace": "Aucun dossier ouvert",
+  "Workspace": "Espace de travail",
   "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?": "La destination contient déjà un fichier nommé \"{0}\".\n\nVoulez-vous le remplacer ?",
   "Replace": "Remplacer",
   "Cut (ready to paste)": "Couper (prêt à coller)"

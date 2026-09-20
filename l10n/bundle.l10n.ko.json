@@ -7,6 +7,7 @@
   "Input new name": "새 이름 입력",
   "Input new label": "새 레이블 입력",
   "No workspace": "열린 폴더가 없습니다",
+  "Workspace": "작업 영역",
   "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?": "대상 위치에 \"{0}\"이라는 이름의 파일이 이미 있습니다.\n\n바꾸시겠습니까?",
   "Replace": "바꾸기",
   "Cut (ready to paste)": "잘라내기 (붙여넣기 준비 완료)"
