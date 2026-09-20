@@ -4,7 +4,7 @@
     "target": "ES2024",
     "outDir": "dist",
     "lib": [
-      "ES2020"
+      "ES2024"
     ],
     "sourceMap": true,
     "rootDir": "src",
