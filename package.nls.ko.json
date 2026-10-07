@@ -14,7 +14,7 @@
   "commands.newFile": "새 파일...",
   "commands.newFolder": "새 폴더...",
   "commands.openAllFiles": "모든 파일 열기",
-  "commands.renameAllFiles": "모든 파일 이름 바꾸기...",
+  "commands.renameAllFiles": "일괄 이름 바꾸기...",
   "commands.rename": "이름 바꾸기...",
   "commands.setLabel": "레이블 설정...",
   "commands.delete": "삭제",

@@ -88,7 +88,9 @@ export function activate(context: vscode.ExtensionContext) {
 			})
 			if (name) {
 				const filePath = vscode.Uri.joinPath(dir, name)
-				await vscode.workspace.fs.writeFile(filePath, new Uint8Array())
+				const edit = new vscode.WorkspaceEdit()
+				edit.createFile(filePath)
+				await vscode.workspace.applyEdit(edit)
 				await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(filePath))
 			}
 		}),
@@ -512,7 +514,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 
 	setConfig(config: SortedExplorerConfig, callback?: () => void) {
 		this.config = config
-		this.refresh()
+		this.refresh(callback)
 	}
 
 	private readonly didChangeTreeDataEvent = new vscode.EventEmitter<FileTreeItem | void>()

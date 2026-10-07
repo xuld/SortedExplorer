@@ -14,7 +14,7 @@
   "commands.newFile": "Nouveau fichier...",
   "commands.newFolder": "Nouveau dossier...",
   "commands.openAllFiles": "Ouvrir tous les fichiers",
-  "commands.renameAllFiles": "Renommer tous les fichiers...",
+  "commands.renameAllFiles": "Renommage par lot...",
   "commands.rename": "Renommer...",
   "commands.setLabel": "Définir l'étiquette...",
   "commands.delete": "Supprimer",

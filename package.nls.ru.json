@@ -14,7 +14,7 @@
   "commands.newFile": "Новый файл...",
   "commands.newFolder": "Новая папка...",
   "commands.openAllFiles": "Открыть все файлы",
-  "commands.renameAllFiles": "Переименовать все файлы...",
+  "commands.renameAllFiles": "Массовое переименование...",
   "commands.rename": "Переименовать...",
   "commands.setLabel": "Установить метку...",
   "commands.delete": "Удалить",

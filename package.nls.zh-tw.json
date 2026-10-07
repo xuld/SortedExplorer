@@ -14,7 +14,7 @@
   "commands.newFile": "新增檔案...",
   "commands.newFolder": "新增資料夾...",
   "commands.openAllFiles": "開啟所有檔案",
-  "commands.renameAllFiles": "重新命名所有檔案...",
+  "commands.renameAllFiles": "批次重新命名...",
   "commands.rename": "重新命名...",
   "commands.setLabel": "設定標籤...",
   "commands.delete": "刪除",
