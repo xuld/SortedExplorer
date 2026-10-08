@@ -206,16 +206,34 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}),
 
-		vscode.commands.registerCommand("sortedExplorer.openFile", async (uri: vscode.Uri) => {
-			await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(uri))
+		vscode.commands.registerCommand("sortedExplorer.openFile", async (uri: vscode.Uri, items?: FileTreeItem[]) => {
+			if (items) {
+				for (const item of items) {
+					await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(item.resourceUri))
+				}
+			} else {
+				await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(uri))
+			}
 		}),
-		vscode.commands.registerCommand("sortedExplorer.openToSide", async (item = treeView.selection[0]) => {
+		vscode.commands.registerCommand("sortedExplorer.openToSide", async (item = treeView.selection[0], items?: FileTreeItem[]) => {
+			if (items) {
+				for (const item of items) {
+					await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(item.resourceUri), vscode.ViewColumn.Beside)
+				}
+				return
+			}
 			if (!item) {
 				return
 			}
 			await vscode.window.showTextDocument(await vscode.workspace.openTextDocument(item.resourceUri), vscode.ViewColumn.Beside)
 		}),
-		vscode.commands.registerCommand("sortedExplorer.openWith", async (item = treeView.selection[0]) => {
+		vscode.commands.registerCommand("sortedExplorer.openWith", async (item = treeView.selection[0], items?: FileTreeItem[]) => {
+			if (items) {
+				for (const item of items) {
+					await vscode.commands.executeCommand("vscode.openWith", item.resourceUri, "default")
+				}
+				return
+			}
 			await vscode.commands.executeCommand("vscode.openWith", item.resourceUri, "default")
 		}),
 
