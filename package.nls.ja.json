@@ -18,6 +18,8 @@
   "commands.rename": "名前を変更...",
   "commands.setLabel": "ラベルを設定...",
   "commands.delete": "削除",
+  "commands.removeFromWorkspace": "ワークスペースからフォルダーを削除",
+  "commands.addFolderToWorkspace": "ワークスペースにフォルダーを追加...",
   "commands.cut": "切り取り",
   "commands.copy": "コピー",
   "commands.paste": "貼り付け",

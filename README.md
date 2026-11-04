@@ -10,5 +10,6 @@ A powerful VS Code extension that allows you to sort files and folders and reord
 4. Open files in directory at once.
 5. Rename all files in directory at once.
 6. Support multiple languages.
+7. Support multi-root workspace.
 
 ![Sorted Explorer](./image/screenshot.gif)

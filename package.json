@@ -54,6 +54,7 @@
             "type": "string"
           },
           "default": [],
+          "scope": "resource",
           "description": "%config.orders%"
         },
         "sortedExplorer.labels": {
@@ -62,6 +63,7 @@
           "additionalProperties": {
             "type": "string"
           },
+          "scope": "resource",
           "description": "%config.labels%"
         },
         "sortedExplorer.states": {
@@ -70,6 +72,7 @@
           "additionalProperties": {
             "type": "boolean"
           },
+          "scope": "resource",
           "description": "%config.states%"
         },
         "sortedExplorer.showOrginalNames": {
@@ -243,6 +246,14 @@
         "title": "%commands.delete%"
       },
       {
+        "command": "sortedExplorer.removeFromWorkspace",
+        "title": "%commands.removeFromWorkspace%"
+      },
+      {
+        "command": "sortedExplorer.addFolderToWorkspace",
+        "title": "%commands.addFolderToWorkspace%"
+      },
+      {
         "command": "sortedExplorer.setLabel",
         "title": "%commands.setLabel%"
       },
@@ -321,7 +332,7 @@
         },
         {
           "command": "sortedExplorer.openInTerminal",
-          "when": "view == sortedExplorer && viewItem == folder",
+          "when": "view == sortedExplorer && (viewItem == folder || viewItem == workspaceFolder)",
           "group": "0_open@70"
         },
         {
@@ -336,7 +347,7 @@
         },
         {
           "command": "sortedExplorer.findInFolder",
-          "when": "view == sortedExplorer && viewItem == folder",
+          "when": "view == sortedExplorer && (viewItem == folder || viewItem == workspaceFolder)",
           "group": "1_find@9"
         },
         {
@@ -386,18 +397,28 @@
         },
         {
           "command": "sortedExplorer.rename",
-          "when": "view == sortedExplorer",
+          "when": "view == sortedExplorer && viewItem != workspaceFolder",
           "group": "5_edit@1"
         },
         {
           "command": "sortedExplorer.renameAllFiles",
-          "when": "view == sortedExplorer && viewItem == folder",
+          "when": "view == sortedExplorer && (viewItem == folder || viewItem == workspaceFolder)",
           "group": "5_edit@2"
         },
         {
           "command": "sortedExplorer.delete",
-          "when": "view == sortedExplorer",
+          "when": "view == sortedExplorer && viewItem != workspaceFolder",
           "group": "5_edit@3"
+        },
+        {
+          "command": "sortedExplorer.removeFromWorkspace",
+          "when": "view == sortedExplorer && viewItem == workspaceFolder",
+          "group": "5_edit@3"
+        },
+        {
+          "command": "sortedExplorer.addFolderToWorkspace",
+          "when": "view == sortedExplorer && viewItem == workspaceFolder",
+          "group": "5_edit@4"
         },
         {
           "command": "sortedExplorer.setLabel",

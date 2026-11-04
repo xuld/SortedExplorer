@@ -15,5 +15,6 @@
   "No workspace": "Aucun dossier ouvert",
   "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?": "La destination contient déjà un fichier nommé \"{0}\".\n\nVoulez-vous le remplacer ?",
   "Replace": "Remplacer",
-  "Cut (ready to paste)": "Couper (prêt à coller)"
+  "Cut (ready to paste)": "Couper (prêt à coller)",
+  "Add": "Ajouter"
 }

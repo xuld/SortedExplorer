@@ -3,6 +3,7 @@ import * as path from "path"
 import * as os from "os"
 
 const configSection = "sortedExplorer"
+const emptyOrders = new Map<string, string[]>()
 
 let cuttingItems: vscode.Uri[] | undefined
 let copyingItems: vscode.Uri[] | undefined
@@ -32,18 +33,18 @@ export function activate(context: vscode.ExtensionContext) {
 		canSelectMany: true
 	})
 	context.subscriptions.push(treeView, treeView.onDidChangeCheckboxState(async e => {
-		const config = vscode.workspace.getConfiguration(configSection)
-		const states = { ...config.get("states", {} as Record<string, boolean>) }
+		const projects = new Set<ProjectConfig>()
 		for (const [item, state] of e.items) {
-			const checked = state === vscode.TreeItemCheckboxState.Checked
-			const relativePath = getRelativePath(item.resourceUri)
-			if (checked) {
-				states[relativePath] = true
-			} else {
-				delete states[relativePath]
+			const project = treeProvider.getProject(item.resourceUri)
+			if (!project) {
+				continue
 			}
+			project.setState(getRelativePath(item.resourceUri), state === vscode.TreeItemCheckboxState.Checked)
+			projects.add(project)
 		}
-		await config.update("states", states)
+		for (const project of projects) {
+			await project.save()
+		}
 	}))
 	updateTitle()
 
@@ -431,27 +432,58 @@ export function activate(context: vscode.ExtensionContext) {
 			}
 		}),
 		vscode.commands.registerCommand("sortedExplorer.delete", async (item?: FileTreeItem) => {
-			await deleteFile(getSelectedItems(item).map(selection => selection.resourceUri))
+			// a workspace folder is only taken out of the workspace, never deleted from disk
+			const files = getSelectedItems(item).filter(t => !isWorkspaceFolderRoot(t.resourceUri)).map(t => t.resourceUri)
+			if (!files.length) {
+				return
+			}
+			await deleteFile(files)
+		}),
+		vscode.commands.registerCommand("sortedExplorer.removeFromWorkspace", (item = treeView.selection[0]) => {
+			if (!item) {
+				return
+			}
+			const folder = vscode.workspace.getWorkspaceFolder(item.resourceUri)
+			if (!folder) {
+				return
+			}
+			vscode.workspace.updateWorkspaceFolders(folder.index, 1)
+		}),
+		vscode.commands.registerCommand("sortedExplorer.addFolderToWorkspace", async (item = treeView.selection[0]) => {
+			if (!item) {
+				return
+			}
+			const folderUris = await vscode.window.showOpenDialog({
+				canSelectFiles: false,
+				canSelectFolders: true,
+				canSelectMany: true,
+				openLabel: vscode.l10n.t("Add"),
+				defaultUri: vscode.Uri.joinPath(item.resourceUri, ".."),
+			})
+			if (folderUris) {
+				// add next to the folder the menu was opened on
+				const index = (vscode.workspace.getWorkspaceFolder(item.resourceUri)?.index ?? -1) + 1
+				vscode.workspace.updateWorkspaceFolders(index, 0, ...folderUris.map(folderUri => ({ uri: folderUri })))
+			}
 		}),
 
 		vscode.commands.registerCommand("sortedExplorer.setLabel", async (item = treeView.selection[0]) => {
 			if (!item) {
 				return
 			}
+			const project = treeProvider.getProject(item.resourceUri)
+			if (!project) {
+				return
+			}
 			const key = getRelativePath(item.resourceUri)
-			let labels = treeProvider.getConfig().labels
-			const oldLabel = labels[key] || path.basename(item.resourceUri.path, path.extname(item.resourceUri.path))
+			const oldLabel = project.labels[key] || path.basename(item.resourceUri.path, path.extname(item.resourceUri.path))
 			const newLabel = await vscode.window.showInputBox({
 				prompt: vscode.l10n.t("Input new label"),
 				value: oldLabel
 			})
 			if (newLabel !== undefined && newLabel !== oldLabel) {
-				if (newLabel) {
-					labels[key] = newLabel
-				} else {
-					labels[key] = undefined!
-				}
-				await vscode.workspace.getConfiguration(configSection).update("labels", labels)
+				project.setLabel(key, newLabel)
+				await project.save()
 			}
 		}),
 		vscode.commands.registerCommand("sortedExplorer.moveUp", async (item = treeView.selection[0]) => {
@@ -511,6 +543,7 @@ export function activate(context: vscode.ExtensionContext) {
 class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 	private workspaceFolders: readonly vscode.WorkspaceFolder[]
 	private config: SortedExplorerConfig
+	private readonly projects = new Map<string, ProjectConfig>()
 
 	constructor(workspaceFolders: readonly vscode.WorkspaceFolder[] | undefined, config: SortedExplorerConfig) {
 		this.workspaceFolders = workspaceFolders ?? []
@@ -523,6 +556,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 
 	setWorkspaceFolders(workspaceFolders: readonly vscode.WorkspaceFolder[] | undefined) {
 		this.workspaceFolders = workspaceFolders ?? []
+		this.projects.clear()
 		this.refresh()
 	}
 
@@ -532,7 +566,12 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 
 	setConfig(config: SortedExplorerConfig, callback?: () => void) {
 		this.config = config
+		this.projects.clear()
 		this.refresh(callback)
+	}
+
+	getProject(uri: vscode.Uri) {
+		return getProject(uri, this.projects)
 	}
 
 	private readonly didChangeTreeDataEvent = new vscode.EventEmitter<FileTreeItem | void>()
@@ -560,11 +599,18 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 		if (this.workspaceFolders.length === 1) {
 			return await this.readDirectory(this.workspaceFolders[0].uri)
 		}
-		return this.workspaceFolders.map(folder => new FileTreeItem(folder.uri, folder.name, this.config.labels[folder.name], this.config.showOrginalNames, this.config.showCheckbox ? !!this.config.states[folder.name] : undefined, false))
+		return this.workspaceFolders.map(folder => {
+			const project = this.getProject(folder.uri)
+			return new FileTreeItem(folder.uri, folder.name, project?.labels[""], this.config.showOrginalNames, this.config.showCheckbox ? !!project?.states[""] : undefined, false)
+		})
 	}
 
 	async readDirectory(dirPath: vscode.Uri): Promise<FileTreeItem[]> {
 		const entries = await vscode.workspace.fs.readDirectory(dirPath)
+		const project = this.getProject(dirPath)
+		const labels = project?.labels ?? {}
+		const states = project?.states ?? {}
+		const orders = project?.orders ?? emptyOrders
 		let dirName = getRelativePath(dirPath)
 		if (dirName) {
 			dirName += "/"
@@ -572,7 +618,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 		const files: FileTreeItem[] = []
 		const folders = this.config.foldersFirst ? [] : files
 		// Add explicit entries
-		for (const fileName of this.config.orders.get(dirName) ?? []) {
+		for (const fileName of orders.get(dirName) ?? []) {
 			const entryIndex = entries.findIndex(entry => entry[0] === fileName)
 			if (entryIndex >= 0) {
 				const key = dirName + fileName
@@ -583,7 +629,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 				const isFile = (fileType & vscode.FileType.File) !== 0
 				const target = isFile ? files : folders
 				const url = vscode.Uri.joinPath(dirPath, fileName)
-				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, this.config.labels[key], this.config.showOrginalNames, this.config.showCheckbox ? !!this.config.states[key] : undefined, isFile)
+				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, labels[key], this.config.showOrginalNames, this.config.showCheckbox ? !!states[key] : undefined, isFile)
 				this.itemsCache.set(item.resourceUri.toString(), item)
 				target.push(item)
 			}
@@ -600,7 +646,7 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 				const isFile = (fileType & vscode.FileType.File) !== 0
 				const target = isFile ? files : folders
 				const url = vscode.Uri.joinPath(dirPath, fileName)
-				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, this.config.labels[key], this.config.showOrginalNames, this.config.showCheckbox ? !!this.config.states[key] : undefined, isFile)
+				const item = this.itemsCache.get(url.toString()) ?? new FileTreeItem(url, fileName, labels[key], this.config.showOrginalNames, this.config.showCheckbox ? !!states[key] : undefined, isFile)
 				this.itemsCache.set(item.resourceUri.toString(), item)
 				target.push(item)
 			}
@@ -658,8 +704,9 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 		if (cache) {
 			return cache
 		}
+		const project = this.getProject(itemPath)
 		const key = getRelativePath(itemPath)
-		return new FileTreeItem(itemPath, path.basename(itemPath.path), this.config.labels[key], this.config.showOrginalNames, this.config.showCheckbox ? !!this.config.states[key] : undefined, false)
+		return new FileTreeItem(itemPath, path.basename(itemPath.path), project?.labels[key], this.config.showOrginalNames, this.config.showCheckbox ? !!project?.states[key] : undefined, false)
 	}
 }
 
@@ -681,7 +728,7 @@ class FileTreeItem extends vscode.TreeItem {
 			this.iconPath = vscode.ThemeIcon.Folder
 			this.collapsibleState = vscode.TreeItemCollapsibleState.Collapsed
 		}
-		this.contextValue = isFile ? "file" : "folder"
+		this.contextValue = isFile ? "file" : isWorkspaceFolderRoot(resourceUri) ? "workspaceFolder" : "folder"
 		if (checked !== undefined) {
 			this.checkboxState = checked ? vscode.TreeItemCheckboxState.Checked : vscode.TreeItemCheckboxState.Unchecked
 		}
@@ -691,9 +738,6 @@ class FileTreeItem extends vscode.TreeItem {
 function getConfig(): SortedExplorerConfig {
 	const configs = vscode.workspace.getConfiguration(configSection)
 	return {
-		orders: parseOrders(configs.get("orders", [] as string[])),
-		labels: configs.get("labels", {} as Record<string, string>),
-		states: configs.get("states", {} as Record<string, boolean>),
 		showOrginalNames: configs.get("showOrginalNames", true),
 		ignore: configs.get("ignore", [".DS_Store", ".git", ".idea", ".vs"]),
 		foldersFirst: configs.get("foldersFirst", true),
@@ -704,12 +748,6 @@ function getConfig(): SortedExplorerConfig {
 }
 
 interface SortedExplorerConfig {
-	/** Custom file orders */
-	orders: Map<string, string[]>
-	/** Display titles for paths */
-	labels: Record<string, string>
-	/** Checked state for paths */
-	states: Record<string, boolean>
 	/** Show original names after titles */
 	showOrginalNames: boolean
 	/** Ignore list */
@@ -722,6 +760,208 @@ interface SortedExplorerConfig {
 	showListedOnly: boolean
 	/** Show numbers before items */
 	showNumbers: boolean
+}
+
+type ProjectDataKey = "orders" | "labels" | "states"
+
+interface ProjectEntry {
+	label?: string
+	state?: boolean
+	ordered?: boolean
+}
+
+class ProjectConfig {
+	/** Custom file orders */
+	orders: Map<string, string[]>
+	/** Display titles for paths */
+	labels: Record<string, string>
+	/** Checked state for paths */
+	states: Record<string, boolean>
+	private orderList: string[]
+	private readonly dirty = new Set<ProjectDataKey>()
+
+	constructor(readonly folder: vscode.WorkspaceFolder) {
+		const configs = vscode.workspace.getConfiguration(configSection, folder.uri)
+		const legacyPrefix = getLegacyPrefix(folder)
+		this.orderList = readProjectData(configs, "orders", legacyPrefix, [] as string[])
+		this.orders = parseOrders(this.orderList)
+		this.labels = readProjectData(configs, "labels", legacyPrefix, {} as Record<string, string>)
+		this.states = readProjectData(configs, "states", legacyPrefix, {} as Record<string, boolean>)
+	}
+
+	setOrder(dirName: string, names: string[]) {
+		this.orders.set(dirName, names)
+		this.orderList = formatOrders(this.orders)
+		this.dirty.add("orders")
+	}
+
+	setLabel(key: string, label: string | undefined) {
+		if (label) {
+			this.labels[key] = label
+		} else {
+			delete this.labels[key]
+		}
+		this.dirty.add("labels")
+	}
+
+	setState(key: string, checked: boolean) {
+		if (checked) {
+			this.states[key] = true
+		} else {
+			delete this.states[key]
+		}
+		this.dirty.add("states")
+	}
+
+	/** Sync stored data when an item is renamed inside the same folder */
+	rename(from: string, to: string) {
+		const index = this.orderList.indexOf(from)
+		if (index >= 0) {
+			this.orderList[index] = to
+			this.orders = parseOrders(this.orderList)
+			this.dirty.add("orders")
+		}
+		if (from in this.labels) {
+			this.labels = replaceKey(this.labels, from, to)
+			this.dirty.add("labels")
+		}
+		if (from in this.states) {
+			this.states = replaceKey(this.states, from, to)
+			this.dirty.add("states")
+		}
+	}
+
+	/** Give a copied item the label and checked state of its source */
+	copy(from: string, to: string) {
+		if (from in this.labels) {
+			this.labels[to] = this.labels[from]
+			this.dirty.add("labels")
+		}
+		if (from in this.states) {
+			this.states[to] = this.states[from]
+			this.dirty.add("states")
+		}
+	}
+
+	/** Drop stored data of a deleted item */
+	remove(key: string) {
+		let changed = false
+		for (let i = this.orderList.length - 1; i >= 0; i--) {
+			if (this.orderList[i] === key) {
+				this.orderList.splice(i, 1)
+				changed = true
+			}
+		}
+		if (changed) {
+			this.orders = parseOrders(this.orderList)
+			this.dirty.add("orders")
+		}
+		if (key in this.labels) {
+			delete this.labels[key]
+			this.dirty.add("labels")
+		}
+		if (key in this.states) {
+			delete this.states[key]
+			this.dirty.add("states")
+		}
+	}
+
+	/** Take stored data of an item moved out of another folder */
+	moveIn(key: string, entry: ProjectEntry) {
+		if (entry.label !== undefined) {
+			this.labels[key] = entry.label
+			this.dirty.add("labels")
+		}
+		if (entry.state !== undefined) {
+			this.states[key] = entry.state
+			this.dirty.add("states")
+		}
+		if (entry.ordered && !this.orderList.includes(key)) {
+			this.orderList.push(key)
+			this.orders = parseOrders(this.orderList)
+			this.dirty.add("orders")
+		}
+	}
+
+	/** Drop stored data of an item moved out of this folder and hand it to the destination folder */
+	moveOut(key: string): ProjectEntry {
+		const entry: ProjectEntry = {
+			label: this.labels[key],
+			state: key in this.states ? this.states[key] : undefined,
+			ordered: this.orderList.includes(key)
+		}
+		this.remove(key)
+		return entry
+	}
+
+	async save() {
+		if (!this.dirty.size) {
+			return
+		}
+		const keys = Array.from(this.dirty)
+		this.dirty.clear()
+		const configs = vscode.workspace.getConfiguration(configSection, this.folder.uri)
+		for (const key of keys) {
+			await configs.update(key, key === "orders" ? this.orderList : this[key], vscode.ConfigurationTarget.WorkspaceFolder)
+		}
+	}
+}
+
+function getProject(uri: vscode.Uri, cache: Map<string, ProjectConfig>) {
+	const folder = vscode.workspace.getWorkspaceFolder(uri)
+	if (!folder) {
+		return undefined
+	}
+	const key = folder.uri.toString()
+	let project = cache.get(key)
+	if (!project) {
+		project = new ProjectConfig(folder)
+		cache.set(key, project)
+	}
+	return project
+}
+
+async function saveProjects(cache: Map<string, ProjectConfig>) {
+	for (const project of cache.values()) {
+		await project.save()
+	}
+}
+
+/**
+ * Earlier versions kept every folder's entries in the shared workspace settings
+ * with a "<folder name>/" prefix, so unprefixed keys are that folder's own data.
+ */
+function getLegacyPrefix(folder: vscode.WorkspaceFolder) {
+	if ((vscode.workspace.workspaceFolders?.length ?? 0) < 2) {
+		return ""
+	}
+	const name = vscode.workspace.asRelativePath(folder.uri)
+	return !name || path.isAbsolute(name) ? "" : name + "/"
+}
+
+function readProjectData<T extends string[] | Record<string, any>>(configs: vscode.WorkspaceConfiguration, key: string, legacyPrefix: string, defaultValue: T): T {
+	const value = configs.get(key, defaultValue)
+	// a folder's own settings always store paths relative to that folder, only shared ones may use the legacy keys
+	if (!legacyPrefix || configs.inspect(key)?.workspaceFolderValue !== undefined) {
+		return value
+	}
+	return selectLegacy(value, legacyPrefix)
+}
+
+function selectLegacy<T extends string[] | Record<string, any>>(value: T, prefix: string): T {
+	const rootName = prefix.slice(0, -1)
+	if (Array.isArray(value)) {
+		return value.filter(t => t.startsWith(prefix)).map(t => t.substring(prefix.length)) as T
+	}
+	const result: Record<string, any> = {}
+	for (const key in value) {
+		if (key.startsWith(prefix)) {
+			result[key.substring(prefix.length)] = value[key]
+		} else if (key === rootName) {
+			result[""] = value[key]
+		}
+	}
+	return result as T
 }
 
 function parseOrders(orders: string[]) {
@@ -930,10 +1170,13 @@ async function existsFile(uri: vscode.Uri) {
 }
 
 async function saveOrders(treeProvider: FileTreeProvider, parentDir: vscode.Uri, items: FileTreeItem[]) {
-	const orders = treeProvider.getConfig().orders
+	const project = treeProvider.getProject(parentDir)
+	if (!project) {
+		return
+	}
 	const relativePath = getRelativePath(parentDir)
-	orders.set(relativePath ? relativePath + "/" : "", items.map(item => item.name))
-	await vscode.workspace.getConfiguration(configSection).update("orders", formatOrders(orders))
+	project.setOrder(relativePath ? relativePath + "/" : "", items.map(item => item.name))
+	await project.save()
 }
 
 function formatOrders(orders: Map<string, string[]>) {
@@ -962,42 +1205,68 @@ function formatOrders(orders: Map<string, string[]>) {
 }
 
 async function handleRenameFiles(files: readonly { readonly oldUri: vscode.Uri, readonly newUri: vscode.Uri }[]) {
-	const config = vscode.workspace.getConfiguration(configSection)
-	const orders = config.get("orders", [] as string[])
-	const labels = config.get("labels", {} as Record<string, string>)
-	const states = config.get("states", {} as Record<string, boolean>)
-	let saveOrders = false
-	let newLabels = labels
-	let newStates = states
+	const cache = new Map<string, ProjectConfig>()
 	for (const file of files) {
-		const oldPath = getRelativePath(file.oldUri)
-		const newPath = getRelativePath(file.newUri)
-		for (let i = 0; i < orders.length; i++) {
-			if (orders[i] === oldPath) {
-				orders[i] = newPath
-				saveOrders = true
+		const from = getRelativePath(file.oldUri)
+		const to = getRelativePath(file.newUri)
+		const source = getProject(file.oldUri, cache)
+		const target = getProject(file.newUri, cache)
+		if (source && target) {
+			if (source === target) {
+				source.rename(from, to)
+			} else {
+				target.moveIn(to, source.moveOut(from))
 			}
-		}
-		if (oldPath in labels) {
-			newLabels = replaceKey(newLabels, oldPath, newPath)
-		}
-		if (oldPath in states) {
-			newStates = replaceKey(states, oldPath, newPath)
+		} else if (source) {
+			source.moveOut(from)
+		} else if (target) {
+			target.moveIn(to, { ordered: false })
 		}
 	}
-	if (saveOrders) {
-		await config.update("orders", orders)
-	}
-	if (newLabels !== labels) {
-		await config.update("labels", newLabels)
-	}
-	if (newStates !== states) {
-		await config.update("states", newStates)
-	}
+	await saveProjects(cache)
 }
 
-function replaceKey(obj: Record<string, any>, from: string, to: string) {
-	const result: Record<string, any> = {}
+async function handleCopyFiles(files: readonly { readonly oldUri: vscode.Uri, readonly newUri: vscode.Uri }[]) {
+	const cache = new Map<string, ProjectConfig>()
+	for (const file of files) {
+		const from = getRelativePath(file.oldUri)
+		const to = getRelativePath(file.newUri)
+		const source = getProject(file.oldUri, cache)
+		const target = getProject(file.newUri, cache)
+		if (!source || !target) {
+			continue
+		}
+		if (source === target) {
+			source.copy(from, to)
+		} else {
+			target.moveIn(to, { label: source.labels[from], state: source.states[from] })
+		}
+	}
+	await saveProjects(cache)
+}
+
+async function handleDeleteFiles(files: readonly vscode.Uri[]) {
+	const cache = new Map<string, ProjectConfig>()
+	for (const file of files) {
+		getProject(file, cache)?.remove(getRelativePath(file))
+	}
+	await saveProjects(cache)
+}
+
+function getRelativePath(uri: vscode.Uri) {
+	const folder = vscode.workspace.getWorkspaceFolder(uri)
+	if (folder) {
+		return path.posix.relative(folder.uri.path, uri.path)
+	}
+	return uri.toString()
+}
+
+function isWorkspaceFolderRoot(uri: vscode.Uri) {
+	return vscode.workspace.getWorkspaceFolder(uri)?.uri.toString() === uri.toString()
+}
+
+function replaceKey<T>(obj: Record<string, T>, from: string, to: string) {
+	const result: Record<string, T> = {}
 	for (const key in obj) {
 		if (key === from) {
 			result[to] = obj[from]
@@ -1006,87 +1275,6 @@ function replaceKey(obj: Record<string, any>, from: string, to: string) {
 		result[key] = obj[key]
 	}
 	return result
-}
-
-async function handleCopyFiles(files: readonly { readonly oldUri: vscode.Uri, readonly newUri: vscode.Uri }[]) {
-	const config = vscode.workspace.getConfiguration(configSection)
-	const labels = config.get("labels", {} as Record<string, string>)
-	const states = config.get("states", {} as Record<string, boolean>)
-	let newLabels = labels
-	let newStates = states
-	for (const file of files) {
-		const oldPath = getRelativePath(file.oldUri)
-		const newPath = getRelativePath(file.newUri)
-		if (oldPath in newLabels) {
-			if (newLabels === labels) {
-				newLabels = { ...labels }
-			}
-			newLabels[newPath] = labels[oldPath]
-		}
-		if (oldPath in newStates) {
-			if (newStates === states) {
-				newStates = { ...states }
-			}
-			newStates[newPath] = states[oldPath]
-		}
-	}
-	if (newLabels !== labels) {
-		await config.update("labels", newLabels)
-	}
-	if (newStates !== states) {
-		await config.update("states", newStates)
-	}
-}
-
-async function handleDeleteFiles(files: readonly vscode.Uri[]) {
-	const config = vscode.workspace.getConfiguration(configSection)
-	const orders = config.get("orders", [] as string[])
-	const labels = config.get("labels", {} as Record<string, string>)
-	const states = config.get("states", {} as Record<string, boolean>)
-	let saveOrders = false
-	let newLabels = labels
-	let newStates = states
-	for (const file of files) {
-		const path = getRelativePath(file)
-		for (let i = orders.length - 1; i >= 0; i--) {
-			if (orders[i] === path) {
-				orders.splice(i, 1)
-				saveOrders = true
-			}
-		}
-		if (path in newLabels) {
-			if (newLabels === labels) {
-				newLabels = { ...labels }
-			}
-			delete newLabels[path]
-		}
-		if (path in newStates) {
-			if (newStates === states) {
-				newStates = { ...states }
-			}
-			delete newStates[path]
-		}
-	}
-	if (saveOrders) {
-		await config.update("orders", orders)
-	}
-	if (newLabels !== labels) {
-		await config.update("labels", newLabels)
-	}
-	if (newStates !== states) {
-		await config.update("states", newStates)
-	}
-}
-
-function getRelativePath(uri: vscode.Uri) {
-	const relativePath = vscode.workspace.asRelativePath(uri)
-	if (!path.isAbsolute(relativePath)) {
-		return relativePath
-	}
-	if (vscode.workspace.getWorkspaceFolder(uri)?.uri.toString() === uri.toString()) {
-		return ""
-	}
-	return uri.toString()
 }
 
 class CutFileDecorationProvider implements vscode.FileDecorationProvider {

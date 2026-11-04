@@ -18,6 +18,8 @@
   "commands.rename": "Renombrar...",
   "commands.setLabel": "Establecer Etiqueta...",
   "commands.delete": "Eliminar",
+  "commands.removeFromWorkspace": "Quitar carpeta del espacio de trabajo",
+  "commands.addFolderToWorkspace": "Agregar carpeta al espacio de trabajo...",
   "commands.cut": "Cortar",
   "commands.copy": "Copiar",
   "commands.paste": "Pegar",

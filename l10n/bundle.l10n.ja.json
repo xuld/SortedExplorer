@@ -15,5 +15,6 @@
   "No workspace": "開いているフォルダがありません",
   "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?": "宛先には既に「{0}」という名前のファイルが存在します。\n\n置き換えますか？",
   "Replace": "置換",
-  "Cut (ready to paste)": "切り取り（貼り付け準備完了）"
+  "Cut (ready to paste)": "切り取り（貼り付け準備完了）",
+  "Add": "追加"
 }

@@ -18,6 +18,8 @@
   "commands.rename": "이름 바꾸기...",
   "commands.setLabel": "레이블 설정...",
   "commands.delete": "삭제",
+  "commands.removeFromWorkspace": "작업 공간에서 폴더 제거",
+  "commands.addFolderToWorkspace": "작업 공간에 폴더 추가...",
   "commands.cut": "잘라내기",
   "commands.copy": "복사",
   "commands.paste": "붙여넣기",

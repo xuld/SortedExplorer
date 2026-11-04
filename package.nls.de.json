@@ -18,6 +18,8 @@
   "commands.rename": "Umbenennen...",
   "commands.setLabel": "Label festlegen...",
   "commands.delete": "Löschen",
+  "commands.removeFromWorkspace": "Ordner aus dem Arbeitsbereich entfernen",
+  "commands.addFolderToWorkspace": "Ordner zum Arbeitsbereich hinzufügen ...",
   "commands.cut": "Ausschneiden",
   "commands.copy": "Kopieren",
   "commands.paste": "Einfügen",

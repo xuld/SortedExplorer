@@ -18,6 +18,8 @@
   "commands.rename": "Rinomina...",
   "commands.setLabel": "Imposta Etichetta...",
   "commands.delete": "Elimina",
+  "commands.removeFromWorkspace": "Rimuovi cartella dall'area di lavoro",
+  "commands.addFolderToWorkspace": "Aggiungi cartella all'area di lavoro...",
   "commands.cut": "Taglia",
   "commands.copy": "Copia",
   "commands.paste": "Incolla",

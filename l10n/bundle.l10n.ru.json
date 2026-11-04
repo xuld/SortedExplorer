@@ -15,5 +15,6 @@
   "No workspace": "Нет открытых папок",
   "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?": "В целевом месте уже есть файл с именем \"{0}\".\n\nХотите заменить его?",
   "Replace": "Заменить",
-  "Cut (ready to paste)": "Вырезать (готово к вставке)"
+  "Cut (ready to paste)": "Вырезать (готово к вставке)",
+  "Add": "Добавить"
 }

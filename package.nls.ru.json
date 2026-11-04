@@ -18,6 +18,8 @@
   "commands.rename": "Переименовать...",
   "commands.setLabel": "Установить метку...",
   "commands.delete": "Удалить",
+  "commands.removeFromWorkspace": "Удалить папку из рабочей области",
+  "commands.addFolderToWorkspace": "Добавить папку в рабочую область...",
   "commands.cut": "Вырезать",
   "commands.copy": "Копировать",
   "commands.paste": "Вставить",

@@ -15,5 +15,6 @@
   "No workspace": "No workspace",
   "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?": "The destination already contains a file named \"{0}\".\n\nDo you want to replace it?",
   "Replace": "Replace",
-  "Cut (ready to paste)": "Cut (ready to paste)"
+  "Cut (ready to paste)": "Cut (ready to paste)",
+  "Add": "Add"
 }

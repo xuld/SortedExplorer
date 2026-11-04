@@ -18,6 +18,8 @@
   "commands.rename": "重新命名...",
   "commands.setLabel": "設定標籤...",
   "commands.delete": "刪除",
+  "commands.removeFromWorkspace": "從工作區刪除資料夾",
+  "commands.addFolderToWorkspace": "將資料夾新增至工作區...",
   "commands.cut": "剪下",
   "commands.copy": "複製",
   "commands.paste": "貼上",

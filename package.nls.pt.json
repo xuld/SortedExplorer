@@ -18,6 +18,8 @@
   "commands.rename": "Renomear...",
   "commands.setLabel": "Definir Rótulo...",
   "commands.delete": "Excluir",
+  "commands.removeFromWorkspace": "Remover Pasta da Área de Trabalho",
+  "commands.addFolderToWorkspace": "Adicionar Pasta à Área de Trabalho...",
   "commands.cut": "Recortar",
   "commands.copy": "Copiar",
   "commands.paste": "Colar",
