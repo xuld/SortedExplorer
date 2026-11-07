@@ -690,8 +690,17 @@ class FileTreeProvider implements vscode.TreeDataProvider<FileTreeItem> {
 	}
 
 	getParent(element: FileTreeItem): vscode.ProviderResult<FileTreeItem> {
-		const dirPath = vscode.Uri.joinPath(element.resourceUri, "..")
+		const uri = element.resourceUri
+		// In a multi-root workspace the folder items themselves sit at the root level
+		if (this.workspaceFolders.length > 1 && isWorkspaceFolderRoot(uri)) {
+			return undefined
+		}
+		const dirPath = vscode.Uri.joinPath(uri, "..")
 		if (this.workspaceFolders.length === 1 && this.workspaceFolders[0].uri.toString() === dirPath.toString()) {
+			return undefined
+		}
+		// Never climb outside the workspace (also stops the no-workspace case)
+		if (!vscode.workspace.getWorkspaceFolder(dirPath)) {
 			return undefined
 		}
 		return this.getItemByPath(dirPath)
@@ -715,6 +724,7 @@ class FileTreeItem extends vscode.TreeItem {
 	readonly name: string
 	constructor(resourceUri: vscode.Uri, name: string, label: string | undefined, showName: boolean, checked: boolean | undefined, isFile: boolean) {
 		super(resourceUri)
+		this.id = resourceUri.toString()
 		this.name = name
 		this.label = label || name
 		if (showName && label) {
